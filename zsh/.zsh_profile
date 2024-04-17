@@ -1,1 +1,5 @@
-alias copytoclipboard="xclip -sel clip"
+alias cpcb="xclip -sel clip"
+
+tldr() {
+    command tldr "$@" | less
+}

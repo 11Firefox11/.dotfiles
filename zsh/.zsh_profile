@@ -1,5 +1,10 @@
 alias cpcb="xclip -sel clip"
 
+# eza
+alias ls="eza"
+alias ll="eza -alh"
+alias tree="eza --tree"
+
 tldr() {
     command tldr "$@" | less
 }

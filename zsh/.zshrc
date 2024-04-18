@@ -111,3 +111,5 @@ unsetopt BEEP
 # tldr autocomplete
 [ -f /bin/tldr ] && compctl -k "($( tldr 2>/dev/null --list))" tldr
 
+# zoxide init
+eval "$(zoxide init --cmd cd zsh)"

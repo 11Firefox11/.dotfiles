@@ -1,3 +1,6 @@
+xterm*background: black
+xterm*foreground: white
+
 ! good color
 XTerm.termName: xterm-256color
 

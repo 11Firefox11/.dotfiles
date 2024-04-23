@@ -114,6 +114,7 @@ unsetopt BEEP
 
 # enable autocomplete for files starting with a dot
 setopt globdots
+zstyle ':completion:*' special-dirs false
 
 # tldr autocomplete
 [ -f /bin/tldr ] && compctl -k "($( tldr 2>/dev/null --list))" tldr

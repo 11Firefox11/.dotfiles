@@ -1,0 +1,17 @@
+! good color
+XTerm.termName: xterm-256color
+
+! use utf8
+XTerm*utf8: 1
+
+! line count
+XTerm*SaveLines: 8000
+
+! font related
+xterm*faceName: Hack
+xterm*faceSize: 11
+
+! copy and paste keybinds
+*VT100.translations: #override \
+    Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
+    Shift Ctrl <Key> V: insert-selection(CLIPBOARD)

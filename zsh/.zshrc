@@ -112,6 +112,9 @@ source ~/.zsh_profile
 # disable beep
 unsetopt BEEP
 
+# enable autocomplete for files starting with a dot
+setopt globdots
+
 # tldr autocomplete
 [ -f /bin/tldr ] && compctl -k "($( tldr 2>/dev/null --list))" tldr
 

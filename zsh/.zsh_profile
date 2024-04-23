@@ -1,4 +1,5 @@
 alias cpcb="xclip -sel clip"
+alias xresreload="xrdb -merge ~/.Xresources"
 
 # eza
 alias ls="eza"

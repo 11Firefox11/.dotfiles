@@ -81,9 +81,6 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=243'
 
 # User configuration
 
-# xterm color support
-TERM="xterm-256color"
-
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment

@@ -1,0 +1,42 @@
+#!/usr/bin/env zsh
+
+USE_BG=-1
+if [[ $1 == "bg" ]]; then
+    USE_BG=1
+else
+    USE_BG=0
+fi
+
+COLUMNS_COUNT=$(tput cols)
+COLORS=$(tput colors)
+COLORS_LEN=$(($(echo -n "$COLORS" | wc -m) + 2))
+COLORS_IN_ONE_LINE=$((($COLUMNS_COUNT - 5) / $COLORS_LEN))
+
+code=0
+while [ $code -lt $COLORS ]; do
+    NTH_IN_ROW=$((($code + 1) % ($COLORS_IN_ONE_LINE + 1)))
+    TO_PRINT=""
+    TEXT_COLOR=""
+    if [[ $USE_BG == 1 ]]; then
+        TEXT_COLOR=0
+    else
+        TEXT_COLOR=$code
+    fi
+    if [[ $code -lt 10 ]]; then
+        TO_PRINT="   %F{$TEXT_COLOR}$code%f "
+    elif [[ $code -lt 100 ]]; then
+        TO_PRINT="  %F{$TEXT_COLOR}$code%f "
+    else
+        TO_PRINT=" %F{$TEXT_COLOR}$code%f "
+    fi
+    if [[ $USE_BG == 1 ]]; then
+        TO_PRINT="%K{$code}$TO_PRINT%K"
+    fi
+    if [[ $NTH_IN_ROW == 0 ]]; then
+        print -P "$TO_PRINT"
+    else
+        print -nP "$TO_PRINT"
+    fi
+    code=$((code+1))
+done
+print ""

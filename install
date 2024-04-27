@@ -14,5 +14,6 @@ do
     stow -D "$folder"
     stow --adopt "$folder"
 done
+git reset --hard
 popd > /dev/null
 

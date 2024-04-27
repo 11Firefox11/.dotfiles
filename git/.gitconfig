@@ -1,5 +1,5 @@
 [includeIf "hasconfig:remote.*.url:https://github.com/**/**"]
     path = .gitconfig-github
 
-[includeIf "hasconfig:remote.*.url:https://gitlab.*.*.hu/**/**"]
+[includeIf "hasconfig:remote.*.url:http://gitlab.neumann-bp.edu.hu/**/**"]
     path = .gitconfig-school

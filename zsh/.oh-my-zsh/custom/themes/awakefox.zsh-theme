@@ -12,19 +12,15 @@ PR_PROMPT='%f⇝%f'
 
 # Check if we are on SSH or not
 if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then
-  PR_HOST='%F{red}%M%f' # SSH
+  PR_HOST='%F{red}%M%f'
 else
-  PR_HOST='' # no SSH
+  PR_HOST='%F{green}%M%f'
 fi
 
 
 local return_code="%(?..%F{red}%? ↵%f)"
 
-if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then
-  local user_host="${PR_USER}%F{cyan}@${PR_HOST}"
-else
-  local user_host="${PR_USER}%F{cyan}"
-fi
+local user_host="${PR_USER}%F{cyan}@${PR_HOST}"
 local current_dir="%B%F{blue}%~%f%b"
 local git_branch='$(git_prompt_info)'
 

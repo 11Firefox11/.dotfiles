@@ -6,7 +6,7 @@ setopt prompt_subst
 
 local PR_USER PR_USER_OP PR_PROMPT PR_HOST
 
-PR_USER='%F{green}%n%f'
+PR_USER='%F{220}%n%f'
 PR_USER_OP='%F{green}%#%f'
 PR_PROMPT='%f⇝%f'
 

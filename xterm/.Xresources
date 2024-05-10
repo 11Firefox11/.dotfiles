@@ -1,4 +1,4 @@
-xterm*background: black
+xterm*background: grey3
 xterm*foreground: white
 
 ! good color

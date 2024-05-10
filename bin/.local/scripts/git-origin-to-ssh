@@ -22,6 +22,9 @@ if [ -z "$REPO_URL" ]; then
     colored-print "Repo URL can't be loaded. Possible that it's already using SSH" 1
 fi
 
+if [[ $REPO_URL != *".git" ]]; then
+  REPO_URL="${REPO_URL}.git"
+fi
 
 USER=$(echo $REPO_URL | sed -Ene's#https://github.com/([^/]*)/(.*).git#\1#p')
 REPO=$(echo $REPO_URL | sed -Ene's#https://github.com/([^/]*)/(.*).git#\2#p')

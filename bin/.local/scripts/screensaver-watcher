@@ -1,0 +1,73 @@
+#!/usr/bin/env zsh
+
+loggertag="screensaver-watcher"
+function onidle() {
+  loginctl lock-session
+}
+function onoff() {
+  playerctl --all-players stop
+  maim /tmp/screenshot.jpg
+  convert -scale 10% -blur 0x1 -resize 1000% /tmp/screenshot.jpg /tmp/screenshot_blurred.png
+  i3lock -n -i /tmp/screenshot_blurred.png
+}
+
+
+# --- actual script starts here ---
+
+fullconfig=$(xset q | grep -A 1 "DPMS (Energy Star):" | sed -n 2p)
+standbysecs=$(echo "$fullconfig" | awk '{print $2}')
+suspendsecs=$(echo "$fullconfig" | awk '{print $4}')
+laststate="ON"
+
+function loginfo() {
+  logger --tag "$loggertag" $1
+}
+
+function getTimeTillNextWait() {
+  idletime=$(xssstate -i)
+  tocomparewith="0"
+  if [[ $laststate == "ON" ]]; then
+    tocomparewith="$standbysecs"
+  elif [[ $laststate == "STANDBY" ]]; then
+    tocomparewith="$suspendsecs"
+  fi
+  echo $(( ($tocomparewith - ($idletime / 1000) - 1.75 ) ))
+}
+
+function checkState() {
+  state=$(xset q | grep "Monitor is")
+  if [[ "$state" == *On ]]; then
+    if [[ $laststate != "ON" ]]; then
+       laststate="ON"
+    fi
+  elif [[ "$state" == *Off ]]; then
+    if [[ $laststate != "OFF" ]]; then
+       laststate="OFF"
+       onoff
+    fi
+  elif [[ "$state" == *Standby ]]; then
+    if [[ $laststate != "STANDBY" ]]; then
+       laststate="STANDBY"
+       onidle
+    fi
+  fi
+}
+
+while true; do
+  timetosleep=$(getTimeTillNextWait)
+  if [[ $timetosleep -gt 0 ]]; then
+    loginfo "Sleeping $timetosleep"
+    sleep $timetosleep
+  else
+    laststatecopy="$laststate"
+    loginfo "Last state copy: $laststate"
+    while [[ $laststate == $laststatecopy ]]; do
+      checkState
+      sleep 0.5
+    done
+    if [[ $laststate == "OFF" ]]; then
+      checkState
+    fi
+    loginfo "New state: $laststate"
+  fi
+done

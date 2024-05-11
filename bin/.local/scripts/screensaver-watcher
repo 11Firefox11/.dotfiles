@@ -53,6 +53,7 @@ function checkState() {
   fi
 }
 
+loginfo "Starting with config: standby - $standbysecs, suspend - $suspendsecs"
 while true; do
   timetosleep=$(getTimeTillNextWait)
   if [[ $timetosleep -gt 0 ]]; then

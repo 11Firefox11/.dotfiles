@@ -1,0 +1,45 @@
+#!/bin/zsh
+startminute=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $1}')
+starthour=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $2}')
+
+currentminute=$(date +%M)
+currenthour=$(date +%H)
+
+targettemp=3500
+starttemp=6500
+minutestofade=10
+stepsize=$(( ($starttemp - $targettemp) / $minutestofade ))
+
+function currtemp() {
+  xsct | awk '{print $5}'
+}
+
+function settemp() {
+  export DISPLAY=":1" && xsct $1
+}
+
+function fade() {
+  ct=$(currtemp)
+  while [ $ct -gt $1 ]; do
+    ct=$(( $ct - $stepsize ))
+    settemp $ct
+    sleep $2
+  done
+}
+
+if [[ $currenthour -lt $starthour ]]; then
+  exit
+fi
+
+if [[ $currentminute != $startminute ]] && [[ $currenthour != $starthour ]]; then
+  minuteslate=$(( $currentminute - $startminute  ))
+  echo $minuteslate
+  if [[ $currenthour != $starthour ]] || [[ $minuteslate -gt $minutestofade ]]; then
+    fade $targettemp 0.2
+    exit
+  fi
+  fade $(( $starttemp - ( $stepsize * $minuteslate ) )) 0.2
+  exit
+fi
+
+#fade 5500 0.5

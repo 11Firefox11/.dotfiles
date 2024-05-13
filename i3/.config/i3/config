@@ -187,5 +187,8 @@ bar {
 }
 
 # wallpaper
-exec_always --no-startup-id test -f /home/awakefox/Pictures/wallpaper.png && feh --bg-scale /home/awakefox/Pictures/wallpaper.png
-exec_always /usr/bin/zsh ~/.dotfiles/bin/.local/scripts/screensaver-watcher
+exec_always --no-startup-id test -f /home/$USER/Pictures/wallpaper.png && feh --bg-scale /home/$USER/Pictures/wallpaper.png
+
+# screensave watcher
+exec_always /usr/bin/zsh /home/$USER/.dotfiles/bin/.local/scripts/screensaver-watcher
+

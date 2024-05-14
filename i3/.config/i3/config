@@ -192,6 +192,10 @@ exec_always --no-startup-id test -f /home/$USER/Pictures/wallpaper.png && feh --
 # screensave watcher
 exec_always /usr/bin/zsh /home/$USER/.dotfiles/bin/.local/scripts/screensaver-watcher
 
+# nightlight
+exec_always /usr/bin/zsh /home/$USER/.dotfiles/bin/.local/scripts/nightlight
+exec crontab /home/$USER/cronnightlight
+
 # screenshots
 bindsym Print exec --no-startup-id  maim "/home/$USER/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "FULL screenshot was saved into Pictures."
 bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "WINDOW screenshot was saved into Pictures."
@@ -201,5 +205,4 @@ bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/$(d
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png && dunstify "FULL screenshot was copied to clipboard"
 bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && dunstify "WINDOW screenshot was copied to clipboard"
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && dunstify "SELECT screenshot was copied to clipboard"
-
 

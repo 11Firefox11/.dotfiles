@@ -1,1 +1,1 @@
-0 15 * * * zsh /home/awakefox/.dotfiles/bin/.local/scripts/nightlight
+5 16 * * * zsh /home/awakefox/.dotfiles/bin/.local/scripts/nightlight

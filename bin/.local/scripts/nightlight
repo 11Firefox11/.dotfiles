@@ -5,8 +5,8 @@ starttemp=6500
 minutestofade=10
 
 # --- actual script starts here ---
-startminute=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $1}')
-starthour=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $2}')
+startminute=$(cat /home/awakefox/cronnightlight | awk '{print $1}')
+starthour=$(cat /home/awakefox/cronnightlight | awk '{print $2}')
 currentminute=$(date +%M)
 currenthour=$(date +%H)
 

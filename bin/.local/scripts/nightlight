@@ -1,37 +1,39 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+loggertag="nightlight"
+targettemp=3500
+starttemp=6500
+minutestofade=10
+
+# --- actual script starts here ---
 startminute=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $1}')
 starthour=$(cat /home/awakefox/.dotfiles/crontab/jobs | awk '{print $2}')
 currentminute=$(date +%M)
 currenthour=$(date +%H)
 
-#remove zeros from the beggining of the numbers
 startminute=$((10#$startminute))
 starthour=$((10#$starthour))
 currentminute=$((10#$currentminute))
 currenthour=$((10#$currenthour))
 
-targettemp=3500
-starttemp=6500
-minutestofade=3
 stepsize=$(( ($starttemp - $targettemp) / $minutestofade ))
 
 # thanks: https://askubuntu.com/questions/230835/list-existing-x-display-names/230838#230838
 display=$(w -hs | awk '{print $3}' | sort -u)
-logger $display
+
+function loginfo() {
+  logger --tag "$loggertag" $1
+}
 
 function currtemp() {
-  export DISPLAY=":0" && xsct | awk '{print $5}'
+  export DISPLAY="$display" && xsct | awk '{print $5}'
 }
 
 function settemp() {
-  logger "$1 $display"
   export DISPLAY="$display" && xsct $1
 }
 
 function fade() {
-  logger "$1 $2"
   ct=$(currtemp)
-  logger "xdd $ct"
   while (( $ct > $1 )); do
     ct=$(( $ct - $stepsize ))
     sleep $2
@@ -39,16 +41,21 @@ function fade() {
   done
 }
 
+loginfo "Checking..."
 if (( $currenthour < $starthour )); then
+  loginfo "Not late."
   exit
 fi
 
 if (( $currentminute != $startminute )) || (( $currenthour != $starthour )); then
   minuteslate=$(( $currentminute - $startminute  ))
   if (( $currenthour != $starthour )) || (( $minuteslate > $minutestofade )); then
+    loginfo "Too late."
     fade $targettemp 0.2
     exit
   fi
+  loginfo "Little bit late."
   fade $(( $starttemp - ( $stepsize * $minuteslate ) )) 0.2
 fi
+loginfo "Fading as planned."
 fade $targettemp 60

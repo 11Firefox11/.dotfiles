@@ -41,10 +41,14 @@ extract_number() {
   echo "$sign$number"
 }
 
+lastalerttext=""
 show_alert() {
-  logger --tag $loggertag "$3"
-  dunstify --replace=1111 --timeout=1500 --icon="$1" --hints=int:value:"$2%" "change-volume" "$3"
-  killall -SIGUSR1 i3status
+  if [[ $lastalerttext != $3 ]]; then
+    lastalerttext="$3"
+    logger --tag $loggertag "$3"
+    dunstify --replace=1111 --timeout=1500 --icon="$1" --hints=int:value:"$2%" "change-volume" "$3"
+    killall -SIGUSR1 i3status
+  fi
 }
 
 get_icon_from_value() {

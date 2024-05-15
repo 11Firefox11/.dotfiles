@@ -207,5 +207,5 @@ bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewi
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && dunstify "SELECT screenshot was copied to clipboard"
 
 # autostart apps
-exec spotify
-exec tutanota
+exec --no-startup-id spotify
+exec --no-startup-id tutanota

@@ -1,0 +1,94 @@
+#!/usr/bin/env zsh
+
+minvolume=0
+maxvolume=150
+highafter=75
+midafter=35
+
+muteimg="$HOME/dotfile-assets/volume-mute.svg"
+highimg="$HOME/dotfile-assets/volume-high.svg"
+lowimg="$HOME/dotfile-assets/volume-low.svg"
+midimg="$HOME/dotfile-assets/volume-mid.svg"
+
+starts_with_pm() {
+  local str=$1
+  if [[ $str =~ ^[+-] ]]; then
+      return 0
+  else
+      return 1
+  fi
+}
+
+ends_with_percent_and_numeric() {
+  local str=$1
+  if [[ $str =~ ^[+-]?[0-9]+%$ ]]; then
+      return 0
+  else
+      return 1
+  fi
+}
+
+extract_number() {
+  local str=$1
+  number=${str%?}
+  sign=""
+  if starts_with_pm "$str"; then
+      sign=${str:0:1}
+      number=${number:1}
+  fi
+  echo "$sign$number"
+}
+
+show_alert() {
+  dunstify --replace=1111 --timeout=1500 --icon="$1" --hints=int:value:"$2%" "change-volume" "$3"
+  killall -SIGUSR1 i3status
+}
+
+get_icon_from_value() {
+  if (( $1 < $midafter )); then
+    echo "$lowimg"
+  elif (( $1 < $highafter )); then
+    echo "$midimg"
+  else
+    echo "$highimg"
+  fi
+}
+
+get_curr_volume() {
+  extract_number $(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}')
+}
+
+set_volume() {
+  if [[ $1 == "full" ]]; then
+    pactl set-sink-mute @DEFAULT_SINK@ toggle
+    muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+    if [[ $muted == "yes" ]]; then
+      show_alert "$muteimg" "0" "Volume: Muted"
+    else
+      currvolume=$(get_curr_volume)
+      icontoshow=$(get_icon_from_value $currvolume)
+      show_alert "$icontoshow" "$currvolume" "Volume: $currvolume%"
+    fi
+    exit
+  fi
+  pactl set-sink-volume @DEFAULT_SINK@ "$1%"
+  icontoshow=$(get_icon_from_value $1)
+  show_alert "$icontoshow" "$1" "Volume: $1%"
+}
+
+volume="$1"
+if [[ $1 == "full" ]]; then
+  set_volume $1
+  exit
+fi
+if ! starts_with_pm "$volume" || ! ends_with_percent_and_numeric "$volume"; then
+  exit
+fi
+
+changeval=$(extract_number "$volume")
+currvolume=$(get_curr_volume)
+
+finalvolume=$(( $currvolume + $changeval))
+if (( $finalvolume >= $minvolume )) && (( $maxvolume >= $finalvolume )); then
+  set_volume $finalvolume
+fi

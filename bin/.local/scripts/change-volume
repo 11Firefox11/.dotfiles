@@ -64,7 +64,21 @@ get_curr_volume() {
 set_volume() {
   if [[ $1 == "full" ]]; then
     pactl set-sink-mute @DEFAULT_SINK@ toggle
+  else
+    pactl set-sink-volume @DEFAULT_SINK@ "$1%"
+  fi
+}
+
+volume="$1"
+if [[ $volume == "full" ]]; then
+  set_volume $volume
+  exit
+elif [[ $volume == "watch" ]]; then
+  logger --tag $loggertag "Watching pactl sink changes..."
+  pactl subscribe | grep --line-buffered "sink" |
+  while read; do
     muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+    currvolume=$(extract_number $(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'))
     if [[ $muted == "yes" ]]; then
       show_alert "$muteimg" "0" "Volume: Muted"
     else
@@ -72,26 +86,21 @@ set_volume() {
       icontoshow=$(get_icon_from_value $currvolume)
       show_alert "$icontoshow" "$currvolume" "Volume: $currvolume%"
     fi
-    exit
-  fi
-  pactl set-sink-volume @DEFAULT_SINK@ "$1%"
-  icontoshow=$(get_icon_from_value $1)
-  show_alert "$icontoshow" "$1" "Volume: $1%"
-}
-
-volume="$1"
-if [[ $1 == "full" ]]; then
-  set_volume $1
+  done
   exit
 fi
+
 if ! starts_with_pm "$volume" || ! ends_with_percent_and_numeric "$volume"; then
   exit
 fi
 
 changeval=$(extract_number "$volume")
 currvolume=$(get_curr_volume)
-
 finalvolume=$(( $currvolume + $changeval))
-if (( $finalvolume >= $minvolume )) && (( $maxvolume >= $finalvolume )); then
-  set_volume $finalvolume
+if (( $finalvolume < $minvolume )); then
+  finalvolume=$minvolume
 fi
+if (( $finalvolume > $maxvolume )); then
+  finalvolume=$maxvolume
+fi
+set_volume $finalvolume

@@ -140,6 +140,9 @@ bindsym $mod+Control+h move workspace to output left
 bindsym $mod+Control+j move workspace to output down
 bindsym $mod+Control+k move workspace to output up
 
+# force apps on workspaces
+assign [class="tutanota-desktop"] $ws4
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -189,6 +192,9 @@ exec_always /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/screensaver-watcher
 # nightlight
 exec_always /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/nightlight
 exec crontab $HOME/cronnightlight
+
+# watch change-volume
+exec_always zsh $HOME/.local/scripts/change-volume "watch"
 
 # screenshots
 bindsym Print exec --no-startup-id  maim "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "FULL screenshot was saved into Pictures."

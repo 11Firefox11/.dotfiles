@@ -202,3 +202,4 @@ bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection c
 
 # autostart apps
 exec spotify
+exec tutanota

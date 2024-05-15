@@ -142,6 +142,8 @@ bindsym $mod+Control+k move workspace to output up
 
 # force apps on workspaces
 assign [class="tutanota-desktop"] $ws4
+assign [class="Spotify"] $ws6
+assign [class="KeePassXC"] $ws5
 
 # reload the configuration file
 bindsym $mod+Shift+c reload

@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+loggertag="change-volume"
 
 minvolume=0
 maxvolume=150
@@ -10,6 +11,7 @@ highimg="$HOME/dotfile-assets/volume-high.svg"
 lowimg="$HOME/dotfile-assets/volume-low.svg"
 midimg="$HOME/dotfile-assets/volume-mid.svg"
 
+# --- actual script starts here ---
 starts_with_pm() {
   local str=$1
   if [[ $str =~ ^[+-] ]]; then
@@ -40,6 +42,7 @@ extract_number() {
 }
 
 show_alert() {
+  logger --tag $loggertag "$3"
   dunstify --replace=1111 --timeout=1500 --icon="$1" --hints=int:value:"$2%" "change-volume" "$3"
   killall -SIGUSR1 i3status
 }

@@ -18,7 +18,7 @@ fullconfig=$(xset q | grep -A 1 "DPMS (Energy Star):" | sed -n 2p)
 standbysecs=$(echo "$fullconfig" | awk '{print $2}')
 suspendsecs=$(echo "$fullconfig" | awk '{print $4}')
 laststate="ON"
-idleexecuted=false
+onidleexecuted=false
 
 function loginfo() {
   logger --tag "$loggertag" $1

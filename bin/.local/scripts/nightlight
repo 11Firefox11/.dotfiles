@@ -18,7 +18,7 @@ currenthour=$((10#$currenthour))
 stepsize=$(( ($starttemp - $targettemp) / $minutestofade ))
 
 # thanks: https://askubuntu.com/questions/230835/list-existing-x-display-names/230838#230838
-display=$(w -hs | awk '{print $3}' | sort -u)
+display=$(w -hs | awk '{print $3}' | sort -u | head -n 1)
 
 function loginfo() {
   logger --tag "$loggertag" $1

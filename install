@@ -1,18 +1,34 @@
 #!/usr/bin/env bash
 
 if [[ -z $DOTFILES ]]; then
-    DOTFILES="$HOME/.dotfiles"
+  DOTFILES="$HOME/.dotfiles"
 fi
 
 # Using find to get a list of directories in DOTFILES, excluding hidden ones
 STOW_FOLDERS=$(find "$DOTFILES" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -exec basename {} \;)
 
+hostdevice="$1"
+if [[ $hostdevice == "" ]]; then
+  if [[ $(hostname) = *laptop ]]; then
+    hostdevice="laptop"
+  elif [[ $(hostname) = *pc ]]; then
+    hostdevice="pc"
+  fi
+fi
+echo "host $hostdevice"
+
 pushd "$DOTFILES" > /dev/null
 for folder in $STOW_FOLDERS
 do
-    echo "stow $folder"
-    stow -D "$folder"
-    stow --adopt "$folder"
+  if [[ $folder = *"-laptop" ]] || [[ $folder = *"-pc" ]]; then
+    if [[ $hostdevice == "" ]] || [[ $folder != *$hostdevice ]]; then
+      echo "skip $folder"
+      continue
+    fi
+  fi
+  echo "stow $folder"
+  stow -D "$folder"
+  stow --adopt "$folder"
 done
 git reset --hard
 popd > /dev/null

@@ -19,6 +19,11 @@ configuration {
 	window-format:              "{w} · {c} · {t}";
 }
 
+configuration {
+    modi: "clipboard";
+    show-icons: false;
+}
+
 /*****----- Global Properties -----*****/
 * {
     font: "Iosevka Nerd Font 10";
@@ -141,7 +146,7 @@ listview {
     fixed-columns:               true;
     
     spacing:                     0px;
-    margin:                      0px;
+   margin:                      0px;
     padding:                     0px;
     border:                      0px solid;
     border-radius:               0px;

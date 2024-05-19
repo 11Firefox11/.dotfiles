@@ -201,14 +201,14 @@ bar {
 exec_always --no-startup-id test -f $HOME/Pictures/wallpaper.png && feh --bg-scale $HOME/Pictures/wallpaper.png
 
 # screensave watcher
-exec_always /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/screensaver-watcher
+exec /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/screensaver-watcher
 
 # nightlight
-exec_always /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/nightlight
+exec /usr/bin/zsh $HOME/.dotfiles/bin/.local/scripts/nightlight
 exec crontab $HOME/cronnightlight
 
 # watch change-volume
-exec_always zsh $HOME/.local/scripts/change-volume "watch"
+exec zsh $HOME/.local/scripts/change-volume "watch"
 
 # screenshots
 bindsym Print exec --no-startup-id  maim "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "FULL screenshot was saved into Pictures."
@@ -225,5 +225,5 @@ exec --no-startup-id spotify
 exec --no-startup-id tutanota
 
 # clipboard
-exec_always --no-startup-id greenclip daemon
+exec --no-startup-id greenclip daemon
 bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}' -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi"

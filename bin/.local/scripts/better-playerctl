@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+nameprio="spotify"
+
+players=("${(@f)$(playerctl -l)}")
+statuses=("${(@f)$(playerctl -a status)}")
+prioind=$(($players[(Ie)$nameprio]))
+if (($prioind != 0)); then
+  if [[ $statuses[$prioind] == "Playing" ]]; then
+    playerctl -p "$nameprio" $1
+    exit
+  fi
+fi
+
+firstpaused=0
+for ((i = 1; i <= $#players; i++));
+do
+  if [[ $statuses[$i] == "Playing" ]]; then
+    playerctl -p "$players[$i]" $1
+    exit
+  fi
+  if (( $firstpaused == 0 )) && [[ $statuses[$i] == "Paused" ]]; then
+    firstpaused=$i
+  fi
+done
+
+if (($prioind != 0)); then
+  playerctl -p "$nameprio" $1
+  exit
+fi
+
+if (($firstpaused != 0)); then
+  playerctl -p "$players[$firstpaused]" $1
+fi
+

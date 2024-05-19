@@ -10,18 +10,13 @@
 /*****----- Configuration -----*****/
 configuration {
 	modi:                       "drun";
-    show-icons:                 true;
+    show-icons:                 false;
     display-drun:               "";
     display-run:                "";
     display-filebrowser:        "";
     display-window:             "";
 	drun-display-format:        "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";
 	window-format:              "{w} · {c} · {t}";
-}
-
-configuration {
-    modi: "clipboard";
-    show-icons: false;
 }
 
 /*****----- Global Properties -----*****/

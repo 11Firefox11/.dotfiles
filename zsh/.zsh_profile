@@ -9,3 +9,5 @@ alias tree="eza --tree"
 tldr() {
     command tldr "$@" | less
 }
+
+bindkey -s ^f "tmux-sessionizer\n"

@@ -20,9 +20,17 @@ configuration {
 }
 
 /*****----- Global Properties -----*****/
-@import                          "shared/colors.rasi"
-@import                          "shared/fonts.rasi"
-
+* {
+    font: "Iosevka Nerd Font 10";
+}
+* {
+    background:     #1E2127FF;
+    background-alt: #282B31FF;
+    foreground:     #FFFFFFFF;
+    selected:       #61AFEFFF;
+    active:         #98C379FF;
+    urgent:         #E06C75FF;
+}
 * {
     border-colour:               var(selected);
     handle-colour:               var(selected);

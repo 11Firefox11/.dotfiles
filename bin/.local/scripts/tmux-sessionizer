@@ -8,6 +8,12 @@ if [[ $session != "\$HOME" ]]; then
 fi
 
 session_name=$(basename "$session_path" | tr . _)
+session_name_max_length="16"
+session_name_max_length_actual=$(( $session_name_max_length - 2 ))
+
+if (( ${#session_name} > session_name_max_length_actual )); then
+  session_name="${session_name:0:session_name_max_length_actual}"
+fi
 
 if ! tmux has-session -t "$session_name" 2> /dev/null; then
   tmux new-session -ds "$session_name" -c "$session"

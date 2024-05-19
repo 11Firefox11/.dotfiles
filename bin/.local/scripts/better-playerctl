@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 nameprio="spotify"
 
+# --- actual script starts here ---
 players=("${(@f)$(playerctl -l)}")
 statuses=("${(@f)$(playerctl -a status)}")
 prioind=$(($players[(Ie)$nameprio]))

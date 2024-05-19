@@ -145,6 +145,11 @@ bindsym $mod+Control+k move workspace to output up
 assign [class="tutanota-desktop"] $ws4
 assign [class="Spotify"] $ws6
 assign [class="KeePassXC"] $ws5
+assign [class="FreeTube"] $ws3
+assign [class="Brave-browser"] $ws3
+
+# other app special defaults
+for_window [class="FreeTube"] layout tabbed
 
 # configure colors
 # class                 border  backgr. text    indicator child_border

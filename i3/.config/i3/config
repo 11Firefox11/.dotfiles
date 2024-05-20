@@ -228,7 +228,7 @@ exec --no-startup-id tutanota
 
 # clipboard
 exec --no-startup-id greenclip daemon
-bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}' -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi"
+bindsym $mod+c exec --no-startup-id rofi -no-show-icons -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}' -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi"
 
 # Include extended file
 include $HOME/.config/i3/config-to-include

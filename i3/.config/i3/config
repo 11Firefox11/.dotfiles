@@ -145,6 +145,7 @@ bindsym $mod+Control+k move workspace to output up
 assign [class="tutanota-desktop"] $ws4
 assign [class="Spotify"] $ws6
 assign [class="KeePassXC"] $ws5
+assign [class="Pavucontrol"] $ws5
 assign [class="FreeTube"] $ws3
 
 # other app special defaults

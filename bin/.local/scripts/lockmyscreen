@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+loginctl lock-session
+playerctl --all-players stop
+maim /tmp/screenshot.jpg
+convert -scale 10% -blur 0x1 -resize 1000% /tmp/screenshot.jpg /tmp/screenshot_blurred.png
+i3lock -n -i /tmp/screenshot_blurred.png

@@ -19,7 +19,6 @@ if ! tmux has-session -t "$session_name" 2> /dev/null; then
   tmux new-session -ds "$session_name" -c "$session_path"
 fi
 
-echo "$TERM_PROGRAM"
 if [ "$TERM_PROGRAM" == "tmux" ]; then
   tmux switch-client -t "$session_name"
 else

@@ -10,4 +10,6 @@ tldr() {
     command tldr "$@" | less
 }
 
-bindkey -s ^f "tmux-sessionizer\n"
+# set so history ignores entries starting with a space
+setopt histignorespace
+bindkey -s ^f " tmux-sessionizer\n"

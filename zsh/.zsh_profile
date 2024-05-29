@@ -16,7 +16,7 @@ alias ll="eza -alh"
 alias tree="eza --tree"
 
 # zoxide
-eval "$(zoxide init --cmd cd zsh)"
+eval "$(zoxide init --cmd cd zsh | sed 's/_files/_cd/g')"
 
 # set so history ignores entries starting with a space
 setopt histignorespace

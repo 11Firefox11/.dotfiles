@@ -1,4 +1,4 @@
-LESS=""
+LESS="r"
 # enable autocomplete for files starting with a >
 setopt globdots
 zstyle ':completion:*' special-dirs false
@@ -7,7 +7,7 @@ alias cpcb="xclip -sel clip"
 alias xresreload="xrdb -merge ~/.Xresources"
 
 tldr() {
-    command tldr "$@" | less -r
+    command tldr "$@" | less
 }
 
 # eza

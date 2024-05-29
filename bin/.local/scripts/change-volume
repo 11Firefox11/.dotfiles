@@ -82,7 +82,6 @@ elif [[ $volume == "watch" ]]; then
   pactl subscribe | grep --line-buffered "sink" |
   while read; do
     muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
-    currvolume=$(extract_number $(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}'))
     if [[ $muted == "yes" ]]; then
       show_alert "$muteimg" "0" "Volume: Muted"
     else

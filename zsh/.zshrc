@@ -133,3 +133,9 @@ unset key
 # Load profile
 source ~/.zsh_profile
 
+# fnm
+FNM_PATH="/home/awakefox/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/awakefox/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi

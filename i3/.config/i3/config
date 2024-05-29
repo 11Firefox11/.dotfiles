@@ -232,6 +232,3 @@ bindsym $mod+c exec --no-startup-id rofi -no-show-icons -modi "clipboard:greencl
 
 # Include extended file
 include $HOME/.config/i3/config-to-include
-
-# start compositor to stop screen tearing
-exec --no-startup-id compton -CGb --backend glx --vsync opengl

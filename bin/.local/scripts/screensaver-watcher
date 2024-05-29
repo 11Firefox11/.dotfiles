@@ -18,7 +18,6 @@ fullconfig=$(xset q | grep -A 1 "DPMS (Energy Star):" | sed -n 2p)
 standbysecs=$(echo "$fullconfig" | awk '{print $2}')
 suspendsecs=$(echo "$fullconfig" | awk '{print $4}')
 laststate="ON"
-onidleexecuted=false
 
 function loginfo() {
   logger --tag "$loggertag" $1
@@ -40,21 +39,16 @@ function checkState() {
   if [[ "$state" == *On ]]; then
     if [[ $laststate != "ON" ]]; then
        laststate="ON"
-       onidleexecuted=false
     fi
   elif [[ "$state" == *Off ]]; then
     if [[ $laststate != "OFF" ]]; then
        laststate="OFF"
-       if [[ ! "$onidleexecuted" ]]; then
-         onidleexecuted=true
-         onidle
-       fi
+       onidle
        onoff
     fi
   elif [[ "$state" == *Standby ]]; then
     if [[ $laststate != "STANDBY" ]]; then
        laststate="STANDBY"
-       onidleexecuted=true
        onidle
     fi
   fi

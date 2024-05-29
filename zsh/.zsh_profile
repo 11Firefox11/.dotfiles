@@ -1,3 +1,7 @@
+# enable autocomplete for files starting with a >
+setopt globdots
+zstyle ':completion:*' special-dirs false
+
 alias cpcb="xclip -sel clip"
 alias xresreload="xrdb -merge ~/.Xresources"
 
@@ -6,10 +10,13 @@ alias ls="eza"
 alias ll="eza -alh"
 alias tree="eza --tree"
 
+# zoxide
+eval "$(zoxide init --cmd cd zsh)"
+
 tldr() {
     command tldr "$@" | less
 }
 
 # set so history ignores entries starting with a space
 setopt histignorespace
-bindkey -s ^f " tmux-sessionizer\n"
+bindkey -s "^f" " tmux-sessionizer\n"

@@ -69,7 +69,12 @@ set_volume() {
   if [[ $1 == "full" ]]; then
     pactl set-sink-mute @DEFAULT_SINK@ toggle
   else
-    pactl set-sink-volume @DEFAULT_SINK@ "$1%"
+    muted=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+    if [[ $muted == "yes" ]]; then
+        set_volume "full"
+    else
+        pactl set-sink-volume @DEFAULT_SINK@ "$1%"
+    fi
   fi
 }
 

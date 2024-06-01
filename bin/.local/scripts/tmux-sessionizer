@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-session=$((echo "$HOME/.dotfiles"; echo "\$HOME"; find ~/work ~/personal ~/school ~ -mindepth 1 -maxdepth 1 -type d  ! -name '.*';) | sed -e 's,^/home/awakefox/,,' | fzf)
+session=$((echo "$HOME/.dotfiles"; echo "\$HOME"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf)
 
 if [[ $session == "" ]]; then
   exit

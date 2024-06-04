@@ -1,7 +1,12 @@
 #!/usr/bin/env zsh
 
+if ! command -v inotifywait > /dev/null; then
+  print -P "%F{red}Can't start: inotifywait not found.%f"
+  exit
+fi
+
 while true; do
-  print -P "$(date +%T): %F{green}Restarting%f"
+  print -P "$(date +%T): %F{green}Restarting...%f"
   $@ &
   PID=$!
   inotifywait --event=modify,modify,move,create,delete,delete_self --recursive . > /dev/null 2>&1

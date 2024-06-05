@@ -9,6 +9,9 @@ while true; do
   print -P "$(date +%T): %F{green}Restarting...%f"
   $@ &
   PID=$!
-  inotifywait --event=modify,modify,move,create,delete,delete_self --recursive . > /dev/null 2>&1
-  pkill -15 -P $PID
+  inotifywait --event=modify,move,create,delete,delete_self --recursive . > /dev/null 2>&1
+#  pkill -15 -P $PID
+  pkill -P $PID 2>/dev/null
+  kill $PID 2>/dev/null
+  wait $PID 2>/dev/null
 done

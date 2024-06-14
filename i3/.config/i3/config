@@ -1,5 +1,4 @@
 set $mod Mod4
-
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 #font pango:monospace 8
@@ -218,10 +217,20 @@ bindsym Print exec --no-startup-id  maim "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:
 bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "WINDOW screenshot was saved into Pictures."
 bindsym Shift+Print exec --no-startup-id maim --select "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "SELECT screenshot was saved into Pictures."
 
+# screenshots via XF86Launch
+bindsym XF86LaunchB exec --no-startup-id  maim "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "FULL screenshot was saved into Pictures."
+bindsym Ctrl+XF86LaunchB exec --no-startup-id maim --window $(xdotool getactivewindow) "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "WINDOW screenshot was saved into Pictures."
+bindsym Mod1+XF86LaunchB exec --no-startup-id maim --select "$HOME/Pictures/$(date -u +%Y-%m-%d_%H:%M:%S).png" && dunstify "SELECT screenshot was saved into Pictures."
+
 # screenshots clipboard
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png && dunstify "FULL screenshot was copied to clipboard"
 bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && dunstify "WINDOW screenshot was copied to clipboard"
 bindsym Ctrl+Shift+Print exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && dunstify "SELECT screenshot was copied to clipboard"
+
+# screenshots clipboard via XF86Launch
+bindsym XF86LaunchA exec --no-startup-id maim | xclip -selection clipboard -t image/png && dunstify "FULL screenshot was copied to clipboard"
+bindsym Ctrl+XF86LaunchA exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png && dunstify "WINDOW screenshot was copied to clipboard"
+bindsym Mod1+XF86LaunchA exec --no-startup-id maim --select | xclip -selection clipboard -t image/png && dunstify "SELECT screenshot was copied to clipboard"
 
 # autostart apps
 exec --no-startup-id spotify

@@ -14,7 +14,11 @@ XTerm*SaveLines: 8000
 xterm*faceName: Hack
 xterm*faceSize: 11
 
-! copy and paste keybinds
-*VT100.translations: #override \
-    Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
-    Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
+! font scale keybinds and copy and paste keybinds
+XTerm.VT100.translations: #override \
+Meta <Key> F11: smaller-vt-font() \n\
+Meta <Key> F12: larger-vt-font() \n\
+Super <Key> F11: smaller-vt-font() \n\
+Super <Key> F12: larger-vt-font() \n\
+Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
+Shift Ctrl <Key> V: insert-selection(CLIPBOARD)

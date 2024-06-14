@@ -147,6 +147,7 @@ assign [class="Spotify"] $ws6
 assign [class="KeePassXC"] $ws5
 assign [class="Pavucontrol"] $ws5
 assign [class="FreeTube"] $ws3
+assign [class="bruno"] $ws2
 
 # other app special defaults
 for_window [class="FreeTube"] layout tabbed
@@ -232,3 +233,11 @@ bindsym $mod+c exec --no-startup-id rofi -no-show-icons -modi "clipboard:greencl
 
 # Include extended file
 include $HOME/.config/i3/config-to-include
+
+# scratchpad
+bindsym $mod+Shift+x move scratchpad
+bindsym $mod+Shift+s scratchpad show
+
+# keyboard layout switch
+exec --no-startup-id setxkbmap -option 'grp:win_space_toggle'
+exec --no-startup-id setxkbmap -layout us,hu

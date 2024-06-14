@@ -21,3 +21,6 @@ eval "$(zoxide init --cmd cd zsh | sed 's/_files/_cd/g')"
 # set so history ignores entries starting with a space
 setopt histignorespace
 bindkey -s "^f" " tmux-sessionizer\n"
+
+# accept completion
+bindkey "^ " autosuggest-accept

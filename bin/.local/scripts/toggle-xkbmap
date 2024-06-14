@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+primaryLayout="us"
+secondaryLayout="hu"
+
+# --- actual script starts here ---
+curr=$(setxkbmap -query | awk '{print $2}' | sed -n '3p')
+if [[ $curr == $primaryLayout ]]; then
+    setxkbmap $secondaryLayout
+else
+    setxkbmap $primaryLayout
+fi

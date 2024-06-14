@@ -239,5 +239,5 @@ bindsym $mod+Shift+x move scratchpad
 bindsym $mod+Shift+s scratchpad show
 
 # keyboard layout switch
-exec --no-startup-id setxkbmap -option 'grp:win_space_toggle'
-exec --no-startup-id setxkbmap -layout us,hu
+exec --no-startup-id setxkbmap -layout hu
+bindsym $mod+Ctrl+Shift+space exec zsh $HOME/.local/scripts/toggle-xkbmap 

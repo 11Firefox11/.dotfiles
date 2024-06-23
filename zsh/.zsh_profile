@@ -23,4 +23,4 @@ setopt histignorespace
 bindkey -s "^f" " tmux-sessionizer\n"
 
 # accept completion
-bindkey "^ " autosuggest-accept
+bindkey "^ " forward-char 

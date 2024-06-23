@@ -250,3 +250,6 @@ bindsym $mod+Shift+s scratchpad show
 # keyboard layout switch
 exec --no-startup-id setxkbmap -layout hu
 bindsym $mod+Ctrl+Shift+space exec zsh $HOME/.local/scripts/toggle-xkbmap 
+
+# exec fdfind so it's cached
+exec zsh ~/.local/scripts/find-dirs-sessionizer 

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~

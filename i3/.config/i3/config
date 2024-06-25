@@ -150,6 +150,8 @@ assign [class="bruno"] $ws2
 
 # other app special defaults
 for_window [class="FreeTube"] layout tabbed
+for_window [urgent="latest" class="FreeTube"] focus
+for_window [urgent="latest" class="Brave-browser"] focus
 
 # configure colors
 # class                 border  backgr. text    indicator child_border

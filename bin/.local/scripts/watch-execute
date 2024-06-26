@@ -5,11 +5,19 @@ if ! command -v inotifywait > /dev/null; then
   exit
 fi
 
+we_exclude_value=""
+for arg in "$@"; do
+    if [[ $arg == "--we-exclude="* ]]; then
+        we_exclude_value="${arg#*=}"
+        break
+    fi
+done
+
 while true; do
   print -P "$(date +%T): %F{green}Restarting...%f"
   $@ &
   PID=$!
-  inotifywait --event=modify,move,create,delete,delete_self --recursive . > /dev/null 2>&1
+  inotifywait --event=modify,move,create,delete,delete_self --recursive . --exclude=$we_exclude_value > /dev/null 2>&1
   pkill -P $PID 2>/dev/null
   kill $PID 2>/dev/null
   wait $PID 2>/dev/null

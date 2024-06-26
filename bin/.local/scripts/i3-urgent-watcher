@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+from i3ipc import Event
+from i3ipc.aio import Connection
+from time import sleep
+import asyncio
+
+variableNameInConfig = "windowsToFocusOnUrgent"
+configLineToSearch = f"set ${variableNameInConfig}"
+
+
+async def on_window_focus(i3, e):
+    global windows
+    if e.container.window_class in windows and not e.container.focused:
+        await e.container.command("focus")
+
+
+def get_window_to_use(conf: str):
+    rawValue = ""
+    for i, ch in enumerate(conf):
+        if ch != "\n" or not conf.startswith(configLineToSearch, i+1):
+            continue
+        startind = i + 1 + len(configLineToSearch)
+        rawValue = conf[startind:conf.index("\n", startind)]
+        break
+    return rawValue.strip().strip("\"").split(",")
+
+
+trycount = 0
+windows = []
+
+
+async def main():
+    global trycount, windows
+    try:
+        i3 = await Connection().connect()
+        windows = get_window_to_use((await i3.get_config()).ipc_data["config"])
+        i3.on(Event.WINDOW_URGENT, on_window_focus)
+        await i3.main()
+    except:
+        sleep(0.3 if trycount < 5 else 3)
+        trycount += 1
+    await main()
+
+asyncio.get_event_loop().run_until_complete(main())

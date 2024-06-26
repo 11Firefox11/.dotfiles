@@ -809,5 +809,7 @@ require('lazy').setup({
   },
 })
 
+-- Things to care about in the future: harpoon2, undotree, some kind of surround, better copy and paste, some fun keybinds from videos
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

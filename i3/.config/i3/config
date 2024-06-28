@@ -1,7 +1,7 @@
 set $mod Mod4
 
 # i3-urgent-watcher stuff
-set $windowsToFocusOnUrgent Brave-browser
+set $windowsToFocusOnUrgent Brave-browser,FreeTube
 exec --no-startup-id python3 $HOME/.local/scripts/i3-urgent-watcher
 
 # Font for window titles. Will also be used by the bar unless a different font

@@ -836,7 +836,7 @@ require('lazy').setup({
   },
 })
 
--- Things to care about in the future: harpoon2, undotree, some kind of surround, better copy and paste, multi cursor or learn macros at least, some fun keybinds from videos
+-- Things to care about in the future: harpoon2, undotree, some kind of surround, better copy and paste, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

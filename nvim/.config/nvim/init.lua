@@ -1,9 +1,7 @@
--- Set <space> as the leader key
--- See `:help mapleader`
+-- Set <space> as the leader key See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -75,6 +73,8 @@ vim.opt.scrolloff = 10
 -- Set jj as ESC in insert mode
 vim.keymap.set('i', 'jj', '<Esc>', { nowait = true })
 
+-- sessionizer
+vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww -n "sessionizer" " tmux-sessionizer"<CR>')
 -- Create moving up and down keymaps
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true })
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true })
@@ -791,9 +791,106 @@ require('lazy').setup({
     'okuuva/auto-save.nvim',
     cmd = 'ASToggle',
     event = { 'InsertLeave', 'TextChanged' }, -- optional for lazy loading on trigger events
-    opts = {},
+    opts = {
+      debounce_delay = 3000,
+      condition = function(buf)
+        local fn = vim.fn
+
+        if fn.getbufvar(buf, '&buftype') ~= '' then
+          return false
+        end
+        return true
+      end,
+    },
   },
   { 'lambdalisue/vim-suda' },
+  {
+    'ray-x/go.nvim',
+    dependencies = { -- optional packages
+      'neovim/nvim-lspconfig',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('go').setup()
+    end,
+    event = { 'CmdlineEnter' },
+    ft = { 'go', 'gomod' },
+    build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
+  },
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('harpoon'):setup()
+    end,
+    keys = {
+      {
+        '<leader>a',
+        function()
+          require('harpoon'):list():add()
+        end,
+        desc = 'harpoon file',
+      },
+      {
+        '<leader>h',
+        function()
+          local harpoon = require 'harpoon'
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = 'harpoon open telescope',
+      },
+      {
+        '<leader>1',
+        function()
+          require('harpoon'):list():select(1)
+        end,
+        desc = 'harpoon to file 1',
+      },
+      {
+        '<leader>2',
+        function()
+          require('harpoon'):list():select(2)
+        end,
+        desc = 'harpoon to file 2',
+      },
+      {
+        '<leader>3',
+        function()
+          require('harpoon'):list():select(3)
+        end,
+        desc = 'harpoon to file 3',
+      },
+      {
+        '<leader>4',
+        function()
+          require('harpoon'):list():select(4)
+        end,
+        desc = 'harpoon to file 4',
+      },
+      {
+        '<leader>5',
+        function()
+          require('harpoon'):list():select(5)
+        end,
+        desc = 'harpoon to file 5',
+      },
+      {
+        '<C-p>',
+        function()
+          require('harpoon'):list():prev()
+        end,
+        desc = 'harpoon previous',
+      },
+      {
+        '<C-n>',
+        function()
+          require('harpoon'):list():next()
+        end,
+        desc = 'harpoon next',
+      },
+    },
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.

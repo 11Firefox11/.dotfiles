@@ -10,8 +10,10 @@ vim.g.have_nerd_font = false
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
-
+vim.o.tabstop = 4
+vim.o.expandtab = false
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.

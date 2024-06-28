@@ -81,6 +81,9 @@ vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true })
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Add executable to currect file
+vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })

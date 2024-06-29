@@ -28,3 +28,7 @@ if [ "$TERM_PROGRAM" == "tmux" ]; then
 else
   tmux attach -t "$session_name"
 fi
+
+if type "zoxide" > /dev/null; then
+  zoxide add "$session_path"
+fi

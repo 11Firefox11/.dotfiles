@@ -818,8 +818,8 @@ require('lazy').setup({
     build = ':lua require("go.install").update_all_sync()', -- if you need to install/update all binaries
   },
   {
-    'ThePrimeagen/harpoon',
-    branch = 'harpoon2',
+    'kimabrandt-flx/harpoon',
+    branch = 'fix_marks_index',
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
       require('harpoon'):setup()
@@ -832,14 +832,14 @@ require('lazy').setup({
         end,
         desc = 'harpoon file',
       },
-      {
-        '<leader>h',
-        function()
-          local harpoon = require 'harpoon'
-          harpoon.ui:toggle_quick_menu(harpoon:list())
-        end,
-        desc = 'harpoon open telescope',
-      },
+      -- {
+      --   '<leader>h',
+      --   function()
+      --     local harpoon = require 'harpoon'
+      --     harpoon.ui:toggle_quick_menu(harpoon:list())
+      --   end,
+      --   desc = 'harpoon open telescope',
+      -- },
       {
         '<leader>1',
         function()
@@ -935,7 +935,22 @@ require('lazy').setup({
   },
 })
 
--- Things to care about in the future: harpoon2, undotree, some kind of surround, better copy and paste, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
+-- harpoon good telescope
+local themes = require 'telescope.themes'
+local hm_actions = require 'telescope._extensions.harpoon_marks.actions'
+vim.keymap.set('n', '<C-h>', function()
+  require('telescope').extensions.harpoon.marks(themes.get_dropdown {
+    previewer = false,
+    layout_config = { width = 0.6 },
+    path_display = { truncate = 10 },
+    attach_mappings = function(_, map)
+      map('i', '<c-d>', hm_actions.delete_mark_selections)
+      map('n', '<c-d>', hm_actions.delete_mark_selections)
+      return true
+    end,
+  })
+end)
+-- Things to care about in the future: undotree, some kind of surround, better copy and paste, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

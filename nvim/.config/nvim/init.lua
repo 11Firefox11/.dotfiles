@@ -799,7 +799,9 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter',
     },
     config = function()
-      require('go').setup()
+      require('go').setup {
+        lsp_cfg = true,
+      }
     end,
     event = { 'CmdlineEnter' },
     ft = { 'go', 'gomod' },
@@ -820,14 +822,14 @@ require('lazy').setup({
         end,
         desc = 'harpoon file',
       },
-      -- {
-      --   '<leader>h',
-      --   function()
-      --     local harpoon = require 'harpoon'
-      --     harpoon.ui:toggle_quick_menu(harpoon:list())
-      --   end,
-      --   desc = 'harpoon open telescope',
-      -- },
+      {
+        '<leader>H',
+        function()
+          local harpoon = require 'harpoon'
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = 'harpoon open window',
+      },
       {
         '<leader>1',
         function()
@@ -937,7 +939,8 @@ vim.keymap.set('n', '<leader>h', function()
       return true
     end,
   })
-end)
+end, { desc = 'open harpoon telescope window' })
+
 -- Things to care about in the future: undotree, some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
 
 -- The line beneath this is called `modeline`. See `:help modeline`

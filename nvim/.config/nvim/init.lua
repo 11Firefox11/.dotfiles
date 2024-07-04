@@ -778,6 +778,7 @@ require('lazy').setup({
   {
     'okuuva/auto-save.nvim',
     cmd = 'ASToggle',
+    enabled = false,
     event = { 'InsertLeave', 'TextChanged' }, -- optional for lazy loading on trigger events
     opts = {
       debounce_delay = 3000,
@@ -800,7 +801,7 @@ require('lazy').setup({
     },
     config = function()
       require('go').setup {
-        lsp_cfg = true,
+        lsp_cfg = false,
       }
     end,
     event = { 'CmdlineEnter' },
@@ -940,6 +941,45 @@ vim.keymap.set('n', '<leader>h', function()
     end,
   })
 end, { desc = 'open harpoon telescope window' })
+
+-- go setup
+require('lspconfig').gopls.setup {
+  settings = {
+    gopls = {
+      -- more settings: https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+      analyses = {
+        unreachable = true,
+        nilness = true,
+        unusedparams = true,
+        useany = true,
+        unusedwrite = true,
+        ST1003 = true,
+        undeclaredname = true,
+        fillreturns = true,
+        nonewvars = true,
+        fieldalignment = false,
+        shadow = true,
+      },
+      codelenses = {
+        generate = false, -- show the `go generate` lens.
+        gc_details = false, -- Show a code lens toggling the display of gc's choices.
+        test = true,
+        tidy = true,
+        vendor = true,
+        regenerate_cgo = true,
+        upgrade_dependency = true,
+      },
+      usePlaceholders = true,
+      completeUnimported = true,
+      staticcheck = true,
+      matcher = 'Fuzzy',
+      diagnosticsDelay = '500ms',
+      symbolMatcher = 'fuzzy',
+      semanticTokens = true,
+      gofumpt = true,
+    },
+  },
+}
 
 -- Things to care about in the future: undotree, some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
 

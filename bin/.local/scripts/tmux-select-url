@@ -3,6 +3,7 @@
 name="select-url"
 message_time_period=1500
 buffer_file_name="tmuxsave"
+menu_max_items=5
 
 # --- actual script starts here ---
 
@@ -29,7 +30,7 @@ fi
 url_count=$(echo "$urls" | wc -l)
 if [ $url_count -eq 1 ]; then
 	xdg-open $urls > /dev/null 2>&1 && tmux display-message -d $message_time_period "#[bold]$name: Opened $urls#[bold]"
-elif [ $url_count -gt 5 ]; then
+elif [ $url_count -gt $menu_max_items ]; then
 	tmux neww -n "url-select" "printf '%s\n' '$urls' | fzf --exit-0 --print-query | xargs -I {} sh -c 'xdg-open {} > /dev/null 2>&1 && tmux display-message \"#[bold]$name: Opened {}#[bold]\"'"
 else
 	tmux_menu="tmux display-menu -t 1 -T 'url-select'"

@@ -35,15 +35,9 @@ else
 	tmux_menu="tmux display-menu -t 1 -T 'url-select'"
 	index=1
 	for url in ${(f)urls}; do
-		if [[ $url == https://* ]]; then
-			prefix="(s)"
-		else
-			prefix="   "
-		fi
-
 		clean_url=${url#*//}
 
-		tmux_menu="$tmux_menu '$prefix$clean_url' $index 'run-shell \"xdg-open $url > /dev/null 2>&1; tmux display-message '\''#[bold]$name: Opened $url#[bold]'\''\"'"
+		tmux_menu="$tmux_menu '$clean_url' $index 'run-shell \"xdg-open $url > /dev/null 2>&1; tmux display-message '\''#[bold]$name: Opened $url#[bold]'\''\"'"
 
 		((index++))
 		if [ $index -gt 9 ]; then

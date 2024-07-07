@@ -139,3 +139,10 @@ if [ -d "$FNM_PATH" ]; then
   export PATH="/home/awakefox/.local/share/fnm:$PATH"
   eval "`fnm env`"
 fi
+
+# bun completions
+[ -s "/home/awakefox/.bun/_bun" ] && source "/home/awakefox/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

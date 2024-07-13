@@ -9,6 +9,9 @@ alias xresreload="xrdb -merge ~/.Xresources"
 tldr() {
     command tldr "$@" | less
 }
+bg-execute() {
+    $@ > /dev/null 2>&1 &
+}
 
 # eza
 alias ls="eza"

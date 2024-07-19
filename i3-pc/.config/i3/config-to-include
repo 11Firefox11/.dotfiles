@@ -11,5 +11,5 @@ workspace $ws4 output HDMI-1
 workspace $ws5 output DP-2
 workspace $ws6 output DP-2
 
-# compositor to stop screen tearing
+# compositor to stop screen tearing and enable shadows
 exec --no-startup-id compton -CGb --backend glx --vsync opengl

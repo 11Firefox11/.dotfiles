@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+handle_action() {
+    case "$1" in
+        "shutdown")
+            shutdown -h now
+            ;;
+        "restart")
+            shutdown -h now --reboot
+            ;;
+    esac
+}
+
+selected=$(echo -e "shutdown\nrestart" | rofi -dmenu -p "system-action" -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi" -no-show-icons -theme-str 'window { width: 350px; height: 200px; }')
+
+handle_action "$selected"

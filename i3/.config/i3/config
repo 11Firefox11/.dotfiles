@@ -242,8 +242,8 @@ bindsym $mod+Shift+x move scratchpad
 bindsym $mod+Shift+s scratchpad show
 
 # keyboard layout switch
-exec --no-startup-id setxkbmap -layout hu
-bindsym $mod+Ctrl+Shift+space exec zsh $HOME/.local/scripts/toggle-xkbmap 
+exec --no-startup-id setxkbmap -layout huprog
+bindsym $mod+Ctrl+Shift+space exec gkbd-keyboard-display -l huprog
 
 # system actions keybind
 bindsym $mod+x exec --no-startup-id zsh $HOME/.local/scripts/system-actions

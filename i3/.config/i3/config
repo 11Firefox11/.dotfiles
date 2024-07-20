@@ -248,5 +248,8 @@ bindsym $mod+Ctrl+Shift+space exec zsh $HOME/.local/scripts/toggle-xkbmap
 # system actions keybind
 bindsym $mod+x exec --no-startup-id zsh $HOME/.local/scripts/system-actions
 
+# unclutter(-xfixes) to hide cursor after not using for a while
+exec --no-startup-id unclutter --timeout 6
+
 # exec fdfind so it's cached
 exec --no-startup-id zsh ~/.local/scripts/find-dirs-sessionizer 

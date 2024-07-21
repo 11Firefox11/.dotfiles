@@ -242,7 +242,6 @@ bindsym $mod+Shift+x move scratchpad
 bindsym $mod+Shift+s scratchpad show
 
 # keyboard layout switch
-# exec_always --no-startup-id sleep 1; setxkbmap -layout huprog -model pc105
 bindsym $mod+Ctrl+Shift+space exec gkbd-keyboard-display -l huprog
 
 # system actions keybind

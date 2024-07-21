@@ -27,10 +27,12 @@ do
     fi
   fi
   echo "stow $folder"
-  if [[ $folder = *"-usr" ]]; then
-    echo "hello"
+  if [[ $folder = *"-usr"* ]]; then
     sudo stow -D -t /usr/ "$folder"
     sudo stow --adopt -t /usr/ "$folder"
+  elif [[ $folder = *"-etc"* ]]; then
+    sudo stow -D -t /etc/ "$folder"
+    sudo stow --adopt -t /etc/ "$folder"
   else
     stow -D "$folder"
     stow --adopt "$folder"

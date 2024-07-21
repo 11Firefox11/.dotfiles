@@ -1,3 +1,6 @@
+# keyboard xorg somehow doesnt work
+exec_always --no-startup-id sleep 1; setxkbmap -layout huprog -model pc105
+
 # move workspaces between monitors
 bindsym $mod+Control+m move workspace to output HDMI-1
 bindsym $mod+Control+s move workspace to output HDMI-2

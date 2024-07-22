@@ -4,5 +4,8 @@
 [includeIf "hasconfig:remote.*.url:git@github.com:**/**"]
     path = .gitconfig-github
 
+[includeIf "hasconfig:remote.*.url:git@gitea.com:**/**"]
+    path = .gitconfig-gitea
+
 [includeIf "hasconfig:remote.*.url:http://gitlab.neumann-bp.edu.hu/**/**"]
     path = .gitconfig-school

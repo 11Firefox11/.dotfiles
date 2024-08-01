@@ -7,7 +7,7 @@
 # Zsh configuration
 # -----------------
 # Path
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/go/bin:$HOME/.local/scripts:/usr/local/bin:$HOME/go/bin/:/opt/nvim-linux64/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/go/bin:$HOME/.local/scripts:/usr/local/bin:$HOME/go/bin/:/opt/nvim-linux64/bin:$HOME/.fzf/bin:$PATH
 
 #
 # History

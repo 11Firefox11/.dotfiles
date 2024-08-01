@@ -250,5 +250,8 @@ bindsym $mod+x exec --no-startup-id zsh $HOME/.local/scripts/system-actions
 # unclutter(-xfixes) to hide cursor after not using for a while
 exec --no-startup-id unclutter --timeout 6
 
+# kanata-watch
+exec --no-startup-id zsh $HOME/.local/scripts/kanata-watch
+
 # exec fdfind so it's cached
 exec --no-startup-id zsh ~/.local/scripts/find-dirs-sessionizer 

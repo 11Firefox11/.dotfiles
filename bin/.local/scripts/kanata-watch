@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+# this script automatically restarts kanata if a keyboard is connected to the system
+# kanata can do this automatically, BUT
+# a bluetooth keyboard may not be recognized
+# for me kanata stopped working after turning off then reconnecting my keyboard
+# so this is a bit crazy patch, but it works
+
+while true; do
+	print -P "$(date +%T): %F{green}Restarting...%f"
+	kanata -c ~/caps2esc.kbd --nodelay &
+	PID=$!
+
+	while true; do
+		filename=$(inotifywait --quiet --format "%f" --event=create /dev/input/)
+
+		if [[ $filename == "mouse"* ]]; then
+			continue
+		fi
+
+		matched=$(cat /proc/bus/input/devices | grep $filename | grep kbd)
+		if [[ $matched ]]; then
+			  pkill -P $PID 2>/dev/null
+			  kill $PID 2>/dev/null
+			  wait $PID 2>/dev/null
+			  break
+		fi
+	done
+done

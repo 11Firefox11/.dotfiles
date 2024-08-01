@@ -14,9 +14,9 @@ fi
 
 is_full=false
 if [[ $1 == "full" ]]; then
-	tmux capture-pane -S "-"
+	tmux capture-pane -J -S "-"
 else
-	tmux capture-pane
+	tmux capture-pane -J
 fi
 tmux save-buffer "${TMPDIR:-/tmp}/${buffer_file_name}"
 tmux delete-buffer

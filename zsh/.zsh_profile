@@ -26,4 +26,10 @@ setopt histignorespace
 bindkey -s "^f" " tmux-sessionizer\n"
 
 # accept completion
-bindkey "^ " forward-char 
+bindkey "^ " forward-char
+
+# history scroll without arrows
+bindkey -r "^[[A"
+bindkey -r "^[[B"
+bindkey "^K" history-substring-search-up
+bindkey "^J" history-substring-search-down

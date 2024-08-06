@@ -1,4 +1,7 @@
-LESS="r"
+export LESS="r"
+
+# set battery for i3blocks
+export BLOCK_INSTANCE=1
 # enable autocomplete for files starting with a >
 setopt globdots
 zstyle ':completion:*' special-dirs false

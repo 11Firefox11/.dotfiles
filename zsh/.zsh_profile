@@ -25,11 +25,10 @@ alias tree="eza --tree"
 eval "$(zoxide init --cmd cd zsh | sed 's/_files/_cd/g')"
 
 # set so history ignores entries starting with a space
-tmux-sessionizer-widget() zsh -l -c "~/.local/scripts/tmux-sessionizer"
-zle -N tmux-sessionizer-widget
-bindkey '^f' tmux-sessionizer-widget
 setopt histignorespace
-# bindkey -s "^f" " tmux-sessionizer\n"
+
+# tmux sessionizer
+bind '^F' ' tmux-sessionizer'
 
 # accept completion
 bindkey "^ " forward-char

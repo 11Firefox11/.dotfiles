@@ -36,5 +36,5 @@ bindkey "^ " forward-char
 # history scroll without arrows
 bindkey -r "^[[A"
 bindkey -r "^[[B"
-bindkey "^K" history-substring-search-up
-bindkey "^J" history-substring-search-down
+bindkey "^n" history-substring-search-up
+bindkey "^p" history-substring-search-down

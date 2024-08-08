@@ -1,4 +1,4 @@
--- Set <space> as the leader key See `:help mapleader
+-- Set <space> as the leader key See `:help mapleadersearch files
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -248,15 +248,45 @@ require('lazy').setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
-        -- You can put your default mappings / updates / etc. in here
-        --  All the info you're looking for is in `:help telescope.setup()`
-        --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
+        defaults = {
+          -- configure to use ripgrep
+          vimgrep_arguments = {
+            'rg',
+            '--follow', -- Follow symbolic links
+            '--hidden', -- Search for hidden files
+            '--no-heading', -- Don't group matches by each file
+            '--with-filename', -- Print the file path with the matched lines
+            '--line-number', -- Show line numbers
+            '--column', -- Show column numbers
+            '--smart-case', -- Smart case search
+
+            -- Exclude some patterns from search
+            '--glob=!**/.git/*',
+            '--glob=!**/.idea/*',
+            '--glob=!**/.vscode/*',
+            '--glob=!**/build/*',
+            '--glob=!**/dist/*',
+            '--glob=!**/yarn.lock',
+            '--glob=!**/package-lock.json',
+          },
+        },
+        pickers = {
+          find_files = {
+            hidden = true,
+            find_command = {
+              'rg',
+              '--files',
+              '--hidden',
+              '--glob=!**/.git/*',
+              '--glob=!**/.idea/*',
+              '--glob=!**/.vscode/*',
+              '--glob=!**/build/*',
+              '--glob=!**/dist/*',
+              '--glob=!**/yarn.lock',
+              '--glob=!**/package-lock.json',
+            },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),

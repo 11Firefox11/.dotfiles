@@ -789,6 +789,15 @@ require('lazy').setup({
   { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
   {
+    'windwp/nvim-ts-autotag',
+    ft = {
+      'html',
+    },
+    config = function()
+      require('nvim-ts-autotag').setup()
+    end,
+  },
+  {
     'christoomey/vim-tmux-navigator',
     cmd = {
       'TmuxNavigateLeft',

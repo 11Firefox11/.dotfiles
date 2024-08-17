@@ -92,6 +92,12 @@ vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true, desc =
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Make <C-w>hjkl resize because simple <C-hjkl> is used for navigation
+vim.keymap.set('n', '<C-w>h', '<C-w>>', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-w>j', '<C-w>+', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-w>k', '<C-w>-', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-w>l', '<C-w><', { noremap = true, silent = true })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --

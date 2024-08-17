@@ -98,6 +98,9 @@ vim.keymap.set('n', '<C-w>j', '<C-w>+', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-w>k', '<C-w>-', { noremap = true, silent = true })
 vim.keymap.set('n', '<C-w>l', '<C-w><', { noremap = true, silent = true })
 
+-- Open undotree
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle undotree' })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -794,6 +797,7 @@ require('lazy').setup({
   },
   { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
+  { 'mbbill/undotree', lazy = false },
   {
     'windwp/nvim-ts-autotag',
     ft = {
@@ -1026,7 +1030,7 @@ require('lspconfig').gopls.setup {
   },
 }
 
--- Things to care about in the future: undotree, some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
+-- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

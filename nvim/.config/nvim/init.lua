@@ -101,6 +101,10 @@ vim.keymap.set('n', '<C-w>l', '<C-w><', { noremap = true, silent = true })
 -- Open undotree
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle undotree' })
 
+-- Gp plugin related
+vim.keymap.set('n', 'gp', vim.cmd.GpChatToggle, { desc = 'Toggle Chat GPT chat' })
+vim.keymap.set('v', 'gp', ':<C-U>echo execute("\'<,\'>GpChatPaste")<CR>', { desc = 'Paste current selection into Chat GPT chat', silent = true })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -797,6 +801,39 @@ require('lazy').setup({
   },
   { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
+  {
+    'robitx/gp.nvim',
+    config = function()
+      local conf = {
+        providers = {
+          copilot = {
+            endpoint = 'https://api.githubcopilot.com/chat/completions',
+            secret = dofile(vim.fn.stdpath 'config' .. '/gp-config.lua'),
+          },
+        },
+        agents = {
+          {
+            provider = 'copilot',
+            name = 'ChatCopilot',
+            chat = true,
+            command = false,
+            model = { model = 'gpt-4o', temperature = 1.1, top_p = 1 },
+            system_prompt = [[
+You are an AI programming assistant. 
+Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.
+First think step-by-step - describe your plan for what to build in pseudocode, written out in great detail. Then output the code in a single code block. Minimize any other prose. Use Markdown formatting in your answers. Make sure to include the programming language name at the start of the Markdown code blocks. Avoid wrapping the whole response in triple backticks. 
+            ]],
+          },
+        },
+        default_command_agent = 'copilot',
+        default_chat_agent = 'copilot',
+        -- For customization, refer to Install > Configuration in the Documentation/Readme
+      }
+      require('gp').setup(conf)
+
+      -- Setup shortcuts here (see Usage > Shortcuts in the Documentation/Readme)
+    end,
+  },
   { 'mbbill/undotree', lazy = false },
   {
     'windwp/nvim-ts-autotag',
@@ -881,39 +918,46 @@ require('lazy').setup({
         desc = 'harpoon open window',
       },
       {
-        '<leader>1',
+        '<leader>3',
         function()
           require('harpoon'):list():select(1)
         end,
-        desc = 'harpoon to file 1',
-      },
-      {
-        '<leader>2',
-        function()
-          require('harpoon'):list():select(2)
-        end,
-        desc = 'harpoon to file 2',
-      },
-      {
-        '<leader>3',
-        function()
-          require('harpoon'):list():select(3)
-        end,
-        desc = 'harpoon to file 3',
+        desc = 'harpoon to file 1 (3 for easier reach)',
       },
       {
         '<leader>4',
         function()
-          require('harpoon'):list():select(4)
+          require('harpoon'):list():select(2)
         end,
-        desc = 'harpoon to file 4',
+        desc = 'harpoon to file 2 (4 for easier reach)',
       },
       {
         '<leader>5',
         function()
+          require('harpoon'):list():select(3)
+        end,
+        desc = 'harpoon to file 3 (5 for easier reach)',
+      },
+      {
+        '<leader>8',
+        function()
+          require('harpoon'):list():select(4)
+        end,
+        desc = 'harpoon to file 4 (8 for easier reach)',
+      },
+      {
+        '<leader>9',
+        function()
           require('harpoon'):list():select(5)
         end,
-        desc = 'harpoon to file 5',
+        desc = 'harpoon to file 5 (9 for easier reach)',
+      },
+      {
+        '<leader>0',
+        function()
+          require('harpoon'):list():select(6)
+        end,
+        desc = 'harpoon to file 6 (0 for easier reach)',
       },
       {
         '<C-p>',

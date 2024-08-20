@@ -827,6 +827,12 @@ First think step-by-step - describe your plan for what to build in pseudocode, w
         },
         default_command_agent = 'copilot',
         default_chat_agent = 'copilot',
+        whisper = {
+          disable = true,
+        },
+        image = {
+          disable = true,
+        },
         -- For customization, refer to Install > Configuration in the Documentation/Readme
       }
       require('gp').setup(conf)

@@ -529,6 +529,15 @@ require('lazy').setup({
             },
           },
         },
+        html = {
+          settings = {
+            html = {
+              format = {
+                enable = false,
+              },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -543,7 +552,18 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua',
+        'staticcheck',
+        'astro-language-server',
+        'html-lsp',
+        'gopls',
+        'biome',
+        'css-lsp',
+        'angular-language-server',
+        'gofumpt',
+        'typescript-language-server',
+        'lua-language-server',
+        'prettier',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -819,7 +839,7 @@ require('lazy').setup({
             command = false,
             model = { model = 'gpt-4o', temperature = 1.1, top_p = 1 },
             system_prompt = [[
-You are an AI programming assistant. 
+You are an AI programming assistant embedded into NeoVim text editor.
 Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.
 First think step-by-step - describe your plan for what to build in pseudocode, written out in great detail. Then output the code in a single code block. Minimize any other prose. Use Markdown formatting in your answers. Make sure to include the programming language name at the start of the Markdown code blocks. Avoid wrapping the whole response in triple backticks. 
             ]],

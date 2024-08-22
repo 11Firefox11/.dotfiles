@@ -8,10 +8,10 @@ vim.g.have_nerd_font = false
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
-vim.o.tabstop = 4
-vim.o.expandtab = false
-vim.o.softtabstop = 4
-vim.o.shiftwidth = 4
+-- vim.o.tabstop = 4
+-- vim.o.expandtab = false
+-- vim.o.softtabstop = 4
+-- vim.o.shiftwidth = 4
 -- Make line numbers default
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
@@ -62,9 +62,6 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
-
--- turn this editorconfig off
-vim.g.editorconfig = false
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -1104,7 +1101,6 @@ require('lspconfig').gopls.setup {
 }
 
 -- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos
--- TODO: editorconfig and sleuth both turned off due to rage of randomly overwriting things ... need to understand these better later
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

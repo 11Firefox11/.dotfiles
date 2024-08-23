@@ -529,15 +529,6 @@ require('lazy').setup({
             },
           },
         },
-        html = {
-          settings = {
-            html = {
-              format = {
-                enable = false,
-              },
-            },
-          },
-        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -563,7 +554,7 @@ require('lazy').setup({
         'gofumpt',
         'typescript-language-server',
         'lua-language-server',
-        'prettier',
+        'prettierd',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -571,6 +562,13 @@ require('lazy').setup({
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
+            if server_name == 'html' then
+              server.on_attach = function(client)
+                -- Disable formatting for HTML LSP
+                client.server_capabilities.document_formatting = false
+                client.server_capabilities.document_range_formatting = false
+              end
+            end
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
@@ -614,7 +612,9 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        html = { { 'prettierd', 'prettier' } },
+        css = { { 'prettierd', 'prettier' } },
+        scss = { { 'prettierd', 'prettier' } },
       },
     },
   },

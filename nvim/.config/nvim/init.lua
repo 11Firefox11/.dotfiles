@@ -68,6 +68,9 @@ vim.opt.scrolloff = 10
 -- Set jj as ESC in insert mode
 vim.keymap.set('i', 'jj', '<Esc>', { nowait = true, desc = 'Quick esc in insert' })
 
+-- lsp restart bind
+vim.keymap.set('n', '<leader>lr', '<cmd>LspRestart<cr>')
+
 -- better copy paste
 vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace selection by pasting current', noremap = true })
 vim.keymap.set('n', '<leader>P', '"+p', { desc = 'Paste from system clipboard', noremap = true })

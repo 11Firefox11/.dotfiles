@@ -8,9 +8,13 @@ handle_action() {
         "restart")
             shutdown -h now --reboot
             ;;
+        "lock")
+            xset dpms force standby
+            zsh -l -c "~/.local/scripts/lockmyscreen"
+            ;;
     esac
 }
 
-selected=$(echo -e "shutdown\nrestart" | rofi -dmenu -p "system-action" -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi" -no-show-icons -theme-str 'window { width: 350px; height: 200px; }')
+selected=$(echo -e "shutdown\nrestart\nlock" | rofi -dmenu -p "system-action" -theme "$HOME/.config/rofi/styles/type-4_style-4.rasi" -no-show-icons -theme-str 'window { width: 350px; height: 200px; }')
 
 handle_action "$selected"

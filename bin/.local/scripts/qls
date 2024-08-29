@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REFRESH_JS="(async () => { while (true) { try { const response = await fetch('/__watch'); const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); } } })();"
+REFRESH_JS="(async () => { let failed = false; while (true) { try { const response = await fetch('/__watch'); if (failed) { window.location.reload(); } const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); failed = true; } } })();"
 while [[ "$1" != "" ]]; do
   case $1 in
     --handle)
@@ -93,5 +93,6 @@ fi
 
 # TODO: handle ignore
 # TODO: add option for non text cache
+# TODO: add dependency checks
 
 # vim: ts=2 sts=2 sw=2 et

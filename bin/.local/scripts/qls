@@ -29,6 +29,8 @@ if [[ "$HANDLE" = true ]]; then
 
   if [[ "$REQUEST" =~ ^GET\ (/.*) ]]; then
     FILEPATH="${BASH_REMATCH[1]}"
+    HEADERS=""
+    BODY=""
     if [[ "$FILEPATH" == "/__watch" ]]; then
       RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\n"
       echo -e $RESPONSE
@@ -44,19 +46,25 @@ if [[ "$HANDLE" = true ]]; then
     SAFEFILE=$(realpath --relative-base=. ".$FILEPATH" 2>/dev/null)
 
     if [[ $? -ne 0 || "$SAFEFILE" == ..* || ! -e "$SAFEFILE" || -d "$SAFEFILE" ]]; then
-      RESPONSE="HTTP/1.1 404 Not Found\r\n\r\nNot Found"
+      HEADERS="HTTP/1.1 404 Not Found"
+      BODY="Not Found"
     else
       MIME_TYPE=$(mimetype -b "$SAFEFILE")
-      RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\n\r\n$(cat "$SAFEFILE")"
+      FILE_CONTENT=$(cat "$SAFEFILE")
       if [[ $MIME_TYPE == "text/html" ]]; then
-        RESPONSE="$RESPONSE\n<script>$REFRESH_JS</script>"
+        FILE_CONTENT="$FILE_CONTENT<script>$REFRESH_JS</script>_"
       fi
+      CONTENT_LENGTH=$(echo -n "$FILE_CONTENT" | wc -c)
+      HEADERS="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $CONTENT_LENGTH"
+      BODY="$FILE_CONTENT"
     fi
   else
-    RESPONSE="HTTP/1.1 404 Not Found\r\n\r\nNot Found"
+    HEADERS="HTTP/1.1 404 Not Found"
+    BODY="Not Found"
   fi
 
-  echo -e $RESPONSE
+  echo -e "$HEADERS\r\n\r\n"
+  printf "%s" "$BODY"
   exit 0
 fi
 

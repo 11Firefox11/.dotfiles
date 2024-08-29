@@ -43,29 +43,28 @@ if [[ "$HANDLE" = true ]]; then
       echo -ne "0\r\n\r\n"
       exit 0
     fi
-    SAFEFILE=$(realpath --relative-base=. ".$FILEPATH" 2>/dev/null)
 
+    SAFEFILE="./${FILEPATH}"
     if [[ $? -ne 0 || "$SAFEFILE" == ..* || ! -e "$SAFEFILE" || -d "$SAFEFILE" ]]; then
       HEADERS="HTTP/1.1 404 Not Found"
       BODY="Not Found"
     else
       MIME_TYPE=$(mimetype -b "$SAFEFILE")
-      HEADERS="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE"
-      if [[ "$MIME_TYPE" == text/* ]]; then
-        FILE_CONTENT=$(cat "$SAFEFILE")
-        if [[ $MIME_TYPE == "text/html" ]]; then
-          FILE_CONTENT="$FILE_CONTENT<script>$REFRESH_JS</script>_"
-        fi
-        CONTENT_LENGTH=$(echo -n "$FILE_CONTENT" | wc -c)
-        HEADERS="$HEADERS\r\nContent-Length: $CONTENT_LENGTH"
-        BODY="$FILE_CONTENT"
-      else
-        CONTENT_LENGTH=$(stat --format="%s" "$SAFEFILE")
-        HEADERS="$HEADERS\r\nContent-Length: $CONTENT_LENGTH"
-        echo -e "$HEADERS\r\n"
-        dd if="$SAFEFILE" bs=1M status=none
-        exit 0
+      FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
+      if [[ $MIME_TYPE == "text/html" ]]; then
+        SCRIPT_TAG="<script>$REFRESH_JS</script>"
+        FILE_SIZE=$(($FILE_SIZE + ${#SCRIPT_TAG}))
       fi
+      if [[ $MIME_TYPE == text/* ]]; then
+        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
+      else
+        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
+      fi
+      dd if="$SAFEFILE" bs=1M status=none
+      if [[ $MIME_TYPE == "text/html" ]]; then
+        echo -e "$SCRIPT_TAG"
+      fi
+      exit 0
     fi
   else
     HEADERS="HTTP/1.1 404 Not Found"
@@ -91,4 +90,8 @@ if [[ "$output" == *"Permission denied" ]]; then
 elif [[ $exit_code -ne 0 ]]; then
   echo "Error: $output"
 fi
+
+# TODO: handle ignore
+# TODO: add option for non text cache
+
 # vim: ts=2 sts=2 sw=2 et

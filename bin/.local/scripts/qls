@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+REFRESH_JS="(async () => { while (true) { try { const response = await fetch('/__watch'); const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); } } })();"
+while [[ "$1" != "" ]]; do
+  case $1 in
+    --handle)
+      HANDLE=true
+      ;;
+    --port=*)
+      PORT="${1#*=}"
+      ;;
+    --ignore=*)
+      IGNORE="${1#*=}"
+      ;;
+  esac
+  shift
+done
+
+if [[ "$HANDLE" = true ]]; then
+  while read line; do
+    trline=`echo $line | tr -d '[\r\n]'`
+
+    [ -z "$trline" ] && break
+
+    HEADLINE_REGEX='(.*?)\s(.*?)\sHTTP.*?'
+
+    [[ "$trline" =~ $HEADLINE_REGEX ]] &&
+      REQUEST=$(echo $trline | sed -E "s/$HEADLINE_REGEX/\1 \2/")
+  done
+
+  if [[ "$REQUEST" =~ ^GET\ (/.*) ]]; then
+    FILEPATH="${BASH_REMATCH[1]}"
+    if [[ "$FILEPATH" == "/__watch" ]]; then
+      RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\n"
+      echo -e $RESPONSE
+      while true; do
+        changedPath=$(inotifywait --event=modify,move,create,delete,delete_self --recursive . --format "%w%f" -q)
+        size=$(echo -n "$changedPath" | wc -c | xargs printf "%X")
+        echo -ne "$size\r\n$changedPath\r\n"
+      done
+
+      echo -ne "0\r\n\r\n"
+      exit 0
+    fi
+    SAFEFILE=$(realpath --relative-base=. ".$FILEPATH" 2>/dev/null)
+
+    if [[ $? -ne 0 || "$SAFEFILE" == ..* || ! -e "$SAFEFILE" || -d "$SAFEFILE" ]]; then
+      RESPONSE="HTTP/1.1 404 Not Found\r\n\r\nNot Found"
+    else
+      MIME_TYPE=$(mimetype -b "$SAFEFILE")
+      RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\n\r\n$(cat "$SAFEFILE")"
+      if [[ $MIME_TYPE == "text/html" ]]; then
+        RESPONSE="$RESPONSE\n<script>$REFRESH_JS</script>"
+      fi
+    fi
+  else
+    RESPONSE="HTTP/1.1 404 Not Found\r\n\r\nNot Found"
+  fi
+
+  echo -e $RESPONSE
+  exit 0
+fi
+
+
+
+PORT=${PORT:-5555}
+SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
+
+echo "Listening on localhost:$PORT..."
+output=$(socat TCP-LISTEN:$PORT,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
+exit_code=$?
+if [[ "$output" == *"Permission denied" ]]; then
+  echo "Error: $output"
+  echo "Probably the port is bad, try a different one."
+elif [[ $exit_code -ne 0 ]]; then
+  echo "Error: $output"
+fi
+# vim: ts=2 sts=2 sw=2 et

@@ -50,13 +50,22 @@ if [[ "$HANDLE" = true ]]; then
       BODY="Not Found"
     else
       MIME_TYPE=$(mimetype -b "$SAFEFILE")
-      FILE_CONTENT=$(cat "$SAFEFILE")
-      if [[ $MIME_TYPE == "text/html" ]]; then
-        FILE_CONTENT="$FILE_CONTENT<script>$REFRESH_JS</script>_"
+      HEADERS="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE"
+      if [[ "$MIME_TYPE" == text/* ]]; then
+        FILE_CONTENT=$(cat "$SAFEFILE")
+        if [[ $MIME_TYPE == "text/html" ]]; then
+          FILE_CONTENT="$FILE_CONTENT<script>$REFRESH_JS</script>_"
+        fi
+        CONTENT_LENGTH=$(echo -n "$FILE_CONTENT" | wc -c)
+        HEADERS="$HEADERS\r\nContent-Length: $CONTENT_LENGTH"
+        BODY="$FILE_CONTENT"
+      else
+        CONTENT_LENGTH=$(stat --format="%s" "$SAFEFILE")
+        HEADERS="$HEADERS\r\nContent-Length: $CONTENT_LENGTH"
+        echo -e "$HEADERS\r\n"
+        dd if="$SAFEFILE" bs=1M status=none
+        exit 0
       fi
-      CONTENT_LENGTH=$(echo -n "$FILE_CONTENT" | wc -c)
-      HEADERS="HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $CONTENT_LENGTH"
-      BODY="$FILE_CONTENT"
     fi
   else
     HEADERS="HTTP/1.1 404 Not Found"

@@ -558,6 +558,7 @@ require('lazy').setup({
         'typescript-language-server',
         'lua-language-server',
         'prettierd',
+        'emmet-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -824,6 +825,12 @@ require('lazy').setup({
   },
   { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
+  {
+    'olrtg/nvim-emmet',
+    config = function()
+      vim.keymap.set({ 'n', 'v' }, '<leader>e', require('nvim-emmet').wrap_with_abbreviation, { desc = 'Emmet wrap with abbreviation' })
+    end,
+  },
   {
     'robitx/gp.nvim',
     config = function()

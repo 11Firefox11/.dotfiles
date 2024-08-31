@@ -30,6 +30,9 @@ setopt histignorespace
 # tmux sessionizer
 bind '^F' ' tmux-sessionizer'
 
+# tmux open window select
+bind '^O' ' [[ "$TERM_PROGRAM" != "tmux" ]] && tmux attach\; choose-session || tmux choose-session'
+
 # accept completion
 bindkey "^ " forward-char
 

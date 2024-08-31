@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-REFRESH_JS="(async () => { let failed = false; while (true) { try { const response = await fetch('/__watch'); if (failed) { window.location.reload(); } const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); failed = true; } } })();"
+REFRESH_JS="<script>(async () => { let failed = false; while (true) { try { const response = await fetch('/__watch'); if (failed) { window.location.reload(); } const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); failed = true; } } })();</script>"
+
 while [[ "$1" != "" ]]; do
   case $1 in
     --handle)
@@ -15,22 +16,23 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
+function NotFound {
+  echo -e "HTTP/1.1 404 Not Found\r\n\r\nNot Found"
+  exit 0
+}
+
 if [[ "$HANDLE" = true ]]; then
   while read line; do
-    trline=`echo $line | tr -d '[\r\n]'`
-
+    trline="${line//$'\r'/}"
     [ -z "$trline" ] && break
 
-    HEADLINE_REGEX='(.*?)\s(.*?)\sHTTP.*?'
-
-    [[ "$trline" =~ $HEADLINE_REGEX ]] &&
-      REQUEST=$(echo $trline | sed -E "s/$HEADLINE_REGEX/\1 \2/")
+    if [[ "$trline" =~ ^GET\ (/.*)\ HTTP ]]; then
+      FILEPATH="${BASH_REMATCH[1]}"
+      break
+    fi
   done
 
-  if [[ "$REQUEST" =~ ^GET\ (/.*) ]]; then
-    FILEPATH="${BASH_REMATCH[1]}"
-    HEADERS=""
-    BODY=""
+  if [[ -n "$FILEPATH" ]]; then
     if [[ "$FILEPATH" == "/__watch" ]]; then
       RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\n"
       echo -e $RESPONSE
@@ -45,15 +47,11 @@ if [[ "$HANDLE" = true ]]; then
     fi
 
     SAFEFILE="./${FILEPATH}"
-    if [[ $? -ne 0 || "$SAFEFILE" == ..* || ! -e "$SAFEFILE" || -d "$SAFEFILE" ]]; then
-      HEADERS="HTTP/1.1 404 Not Found"
-      BODY="Not Found"
-    else
+    if [[ "$SAFEFILE" != *..* && -e "$SAFEFILE" ]]; then
       MIME_TYPE=$(mimetype -b "$SAFEFILE")
       FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
       if [[ $MIME_TYPE == "text/html" ]]; then
-        SCRIPT_TAG="<script>$REFRESH_JS</script>"
-        FILE_SIZE=$(($FILE_SIZE + ${#SCRIPT_TAG}))
+        FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
       fi
       if [[ $MIME_TYPE == text/* ]]; then
         echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
@@ -61,19 +59,11 @@ if [[ "$HANDLE" = true ]]; then
         echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
       fi
       dd if="$SAFEFILE" bs=1M status=none
-      if [[ $MIME_TYPE == "text/html" ]]; then
-        echo -e "$SCRIPT_TAG"
-      fi
+      [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"
       exit 0
     fi
-  else
-    HEADERS="HTTP/1.1 404 Not Found"
-    BODY="Not Found"
   fi
-
-  echo -e "$HEADERS\r\n\r\n"
-  printf "%s" "$BODY"
-  exit 0
+  NotFound
 fi
 
 
@@ -94,5 +84,7 @@ fi
 # TODO: handle ignore
 # TODO: add option for non text cache
 # TODO: add dependency checks
+# TODO: / redirect to index.html
+# TODO: show .md files as html
 
 # vim: ts=2 sts=2 sw=2 et

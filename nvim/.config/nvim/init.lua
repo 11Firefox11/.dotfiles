@@ -748,6 +748,7 @@ require('lazy').setup({
       -- directly inside the plugin declaration.
       vim.g.gruvbox_material_enable_italic = true
       vim.g.gruvbox_material_background = 'hard'
+      vim.g.gruvbox_material_float_style = 'dim'
       vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
@@ -828,7 +829,7 @@ require('lazy').setup({
   {
     'olrtg/nvim-emmet',
     config = function()
-      vim.keymap.set({ 'n', 'v' }, '<leader>e', require('nvim-emmet').wrap_with_abbreviation, { desc = 'Emmet wrap with abbreviation' })
+      vim.keymap.set({ 'n', 'v' }, '<leader>xe', require('nvim-emmet').wrap_with_abbreviation, { desc = 'Emmet wrap with abbreviation' })
     end,
   },
   {

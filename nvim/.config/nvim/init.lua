@@ -1111,7 +1111,7 @@ require('lspconfig').gopls.setup {
   },
 }
 
--- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet
+-- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet, some kind of git diff view like diffview.nvim
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

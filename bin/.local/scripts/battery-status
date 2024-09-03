@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+
+sum_charging=false
+sum_max=0
+sum_now=0
+
+for battery in /sys/class/power_supply/BAT*; do
+    if [[ -f "$battery/energy_full" && -f "$battery/energy_now" ]]; then
+	bstat=$(cat "$battery/status")
+	if [[ $bstat == "Charging" ]]; then
+		sum_charging=true
+	fi
+	read max < "$battery/energy_full"
+	((sum_max += max))
+	read now < "$battery/energy_now"
+	((sum_now += now))
+    fi
+done
+
+percent=$(echo "scale=4; ($sum_now/$sum_max) * 100" | bc | awk '{print int($0)}')
+
+full_text="$percent%"
+short_text="$percent%"
+
+if [[ $sum_charging == true ]]; then
+	full_text="$full_text CHR"
+else
+	full_text="$full_text DIS"
+fi
+
+echo "$full_text"
+echo "$short_text"
+if (($percent < 20)) {
+	echo "#FF0000";
+}

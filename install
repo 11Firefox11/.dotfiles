@@ -28,7 +28,7 @@ echo "host $hostdevice"
 pushd "$DOTFILES" > /dev/null
 for folder in $STOW_FOLDERS
 do
-  if [[ "$JUST_CORE" = "true" && ! "$folder" =~ ^(bin|git|nvim|tmux|xterm|zsh)$ ]]; then
+  if [[ "$JUST_CORE" = "true" && ! "$folder" =~ ^(bin|nvim|tmux|xterm|zsh)$ ]]; then
     continue
   fi
   if [[ $folder = *"-laptop" ]] || [[ $folder = *"-pc" ]]; then

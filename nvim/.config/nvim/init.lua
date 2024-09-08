@@ -442,6 +442,7 @@ require('lazy').setup({
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, { buffer = event.buf, desc = 'LSP: [C]ode [A]ction' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -824,8 +825,8 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-  { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
+  { 'sindrets/diffview.nvim' },
   {
     'olrtg/nvim-emmet',
     config = function()
@@ -1111,7 +1112,7 @@ require('lspconfig').gopls.setup {
   },
 }
 
--- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet, some kind of git diff view like diffview.nvim
+-- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet, do more diffview.nvim, make things actually lazy load (for example with cmd = )
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

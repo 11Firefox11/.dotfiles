@@ -11,6 +11,7 @@ XTerm*utf8: 1
 XTerm*SaveLines: 8000
 
 ! font related
+xterm*faceName: Hack Nerd Font
 xterm*faceSize: 11
 
 ! font scale keybinds and copy and paste keybinds

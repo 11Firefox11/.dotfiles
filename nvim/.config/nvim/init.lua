@@ -825,7 +825,6 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-  { 'wakatime/vim-wakatime', lazy = false },
   { 'ThePrimeagen/vim-be-good' },
   { 'sindrets/diffview.nvim' },
   {

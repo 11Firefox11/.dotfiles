@@ -42,7 +42,7 @@ bindsym XF86AudioPrev exec --no-startup-id zsh $HOME/.local/scripts/better-playe
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec xterm
+bindsym $mod+Return exec wezterm
 
 # kill focused window
 bindsym $mod+Shift+q kill

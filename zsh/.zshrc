@@ -7,6 +7,9 @@
 # Zsh configuration
 # -----------------
 # Path
+export LANG=C.UTF-8
+setopt COMBINING_CHARS
+export LC_COLLATE=C
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/go/bin:$HOME/.local/scripts:/usr/local/bin:$HOME/go/bin/:/opt/nvim-linux64/bin:$HOME/.fzf/bin:$PATH
 
 #

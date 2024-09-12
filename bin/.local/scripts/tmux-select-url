@@ -21,7 +21,7 @@ fi
 tmux save-buffer "${TMPDIR:-/tmp}/${buffer_file_name}"
 tmux delete-buffer
 
-urls=$(grep -Eoi "(http|https)://[a-zA-Z0-9+./?=_%:-]+" /tmp/$buffer_file_name | uniq)
+urls=$(grep -Eoi "(http|https)://[a-zA-Z0-9+./?=_%:-]+" /tmp/$buffer_file_name | sort | uniq)
 if [[ -z $urls ]]; then
 	tmux display-message -d "$message_time_period" "#[fg=red bold]$name: No URL found#[bg=red bold]"
 	exit 0

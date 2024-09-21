@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
 
-session=$((echo "\$HOME"; echo "$HOME/.dotfiles"; zsh ~/.local/scripts/find-dirs-sessionizer;) | sed -e 's,^/home/awakefox/,,' | fzf)
+script_path=$(realpath "${BASH_SOURCE[0]}")
+
+if [[ ! -z "$1" ]]; then
+  session=$((fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . "$1";) | sed -e "s,^$1/,," | fzf --bind "space:become(bash $script_path $1/{})")
+else
+  session=$((echo "\$HOME"; echo "$HOME/.dotfiles"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf --bind "space:become(bash $script_path $HOME/{})")
+fi
 
 if [[ $session == "" ]]; then
   exit
 fi
 
-session_path="$HOME"
-if [[ $session != "\$HOME" ]]; then
-  session_path="$session_path/$session"
+if [[ ! -z "$1" ]]; then
+  session_path="$1/$session"
+else
+  session_path="$HOME"
+  if [[ $session != "\$HOME" ]]; then
+    session_path="$session_path/$session"
+  fi
 fi
 
 session_name=$(basename "$session_path" | tr . _)

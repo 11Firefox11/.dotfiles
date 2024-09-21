@@ -69,7 +69,10 @@ vim.opt.scrolloff = 10
 vim.keymap.set('i', 'jj', '<Esc>', { nowait = true, desc = 'Quick esc in insert' })
 
 -- lsp restart bind
-vim.keymap.set('n', '<leader>lr', '<cmd>LspRestart<cr>')
+vim.keymap.set('n', '<leader>lr', '<cmd>LspRestart<cr>', { desc = 'Restart LSP' })
+
+-- edit current directory
+vim.keymap.set('n', '<leader>C', '<cmd>e %:p:h/<cr>', { desc = 'Edit current directory relative to open buffer' })
 
 -- better copy paste
 vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Replace selection by pasting current', noremap = true })
@@ -533,6 +536,20 @@ require('lazy').setup({
             },
           },
         },
+        emmet_ls = {
+          filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php' },
+          init_options = {
+            includeLanguages = {},
+            excludeLanguages = {},
+            extensionsPath = {},
+            preferences = {},
+            showAbbreviationSuggestions = true,
+            showExpandedAbbreviation = 'always',
+            showSuggestionsAsSnippets = false,
+            syntaxProfiles = {},
+            variables = {},
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -823,6 +840,17 @@ require('lazy').setup({
     end,
   },
   { 'ThePrimeagen/vim-be-good' },
+  {
+    'luckasRanarison/tailwind-tools.nvim',
+    name = 'tailwind-tools',
+    build = ':UpdateRemotePlugins',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim', -- optional
+      'neovim/nvim-lspconfig', -- optional
+    },
+    opts = {}, -- your configuration
+  },
   { 'sindrets/diffview.nvim' },
   {
     'olrtg/nvim-emmet',

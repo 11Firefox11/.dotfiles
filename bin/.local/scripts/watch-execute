@@ -22,7 +22,11 @@ while true; do
   print -P "$(date +%T): %F{green}Restarting...%f"
   $@ &
   PID=$!
-  inotifywait --event=modify,move,create,delete,delete_self --recursive . --exclude=$we_exclude_value > /dev/null 2>&1
+  if [[ -z "$we_exclude_value" ]]; then
+    inotifywait --event=modify,move,create,delete,delete_self --recursive . > /dev/null 2>&1
+  else
+    inotifywait --event=modify,move,create,delete,delete_self --recursive . --exclude="$we_exclude_value" > /dev/null 2>&1
+  fi
   pkill -P $PID 2>/dev/null
   kill $PID 2>/dev/null
   wait $PID 2>/dev/null

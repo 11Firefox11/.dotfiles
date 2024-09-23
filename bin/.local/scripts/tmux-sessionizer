@@ -3,13 +3,28 @@
 script_path=$(realpath "${BASH_SOURCE[0]}")
 
 if [[ ! -z "$1" ]]; then
-  session=$((fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . "$1";) | sed -e "s,^$1/,," | fzf --bind "space:become(bash $script_path $1/{})")
+  fzf_output=$((echo "\$THIS"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . "$1";) | sed -e "s,^$1/,," | fzf --expect=space)
 else
-  session=$((echo "\$HOME"; echo "$HOME/.dotfiles"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf --bind "space:become(bash $script_path $HOME/{})")
+  fzf_output=$((echo "\$HOME"; echo "$HOME/.dotfiles"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf --expect=space)
+fi
+
+fzf_key=$(echo "${fzf_output}" | head -1)
+session=$(echo "$fzf_output" | sed -n '2p')
+
+if [[ $fzf_key == "space" ]]; then
+  if [[ ! -z "$1" ]]; then
+    bash -c "$script_path $1/$session"
+  else
+    bash -c "$script_path $HOME/$session"
+  fi
+  exit
 fi
 
 if [[ $session == "" ]]; then
   exit
+fi
+if [[ $session == "\$THIS" ]]; then
+  session=""
 fi
 
 if [[ ! -z "$1" ]]; then

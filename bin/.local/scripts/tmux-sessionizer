@@ -3,15 +3,15 @@
 script_path=$(realpath "${BASH_SOURCE[0]}")
 
 if [[ ! -z "$1" ]]; then
-  fzf_output=$((echo "\$THIS"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . "$1";) | sed -e "s,^$1/,," | fzf --expect=space)
+  fzf_output=$((echo "\$THIS"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . "$1";) | sed -e "s,^$1/,," | fzf --expect=tab)
 else
-  fzf_output=$((echo "\$HOME"; echo "$HOME/.dotfiles"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf --expect=space)
+  fzf_output=$((echo "\$HOME"; echo "$HOME/.dotfiles"; fdfind --min-depth 1 --max-depth 1 --type d --exclude='.*' . ~/work ~/personal ~/school ~;) | sed -e 's,^/home/awakefox/,,' | fzf --expect=tab)
 fi
 
 fzf_key=$(echo "${fzf_output}" | head -1)
 session=$(echo "$fzf_output" | sed -n '2p')
 
-if [[ $fzf_key == "space" ]]; then
+if [[ $fzf_key == "tab" ]]; then
   if [[ ! -z "$1" ]]; then
     bash -c "$script_path $1/$session"
   else

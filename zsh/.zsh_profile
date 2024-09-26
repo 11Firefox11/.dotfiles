@@ -1,3 +1,5 @@
+export EDITOR="$(which nvim)"
+export SUDO_EDITOR="$(which nvim)"
 export LESS="r"
 
 # set battery for i3blocks

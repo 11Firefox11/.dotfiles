@@ -107,10 +107,6 @@ vim.keymap.set('n', '<C-w>l', '<C-w><', { noremap = true, silent = true })
 -- Open undotree
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle undotree' })
 
--- Gp plugin related
-vim.keymap.set('n', 'gp', vim.cmd.GpChatToggle, { desc = 'Toggle Chat GPT chat' })
-vim.keymap.set('v', 'gp', ':<C-U>echo execute("\'<,\'>GpChatPaste")<CR>', { desc = 'Paste current selection into Chat GPT chat', silent = true })
-
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -818,6 +814,61 @@ require('lazy').setup({
   },
   { 'ThePrimeagen/vim-be-good' },
   {
+    'm4xshen/hardtime.nvim',
+    dependencies = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
+    opts = {
+      resetting_keys = {
+        ['1'] = { 'n', 'x' },
+        ['2'] = { 'n', 'x' },
+        ['3'] = { 'n', 'x' },
+        ['4'] = { 'n', 'x' },
+        ['5'] = { 'n', 'x' },
+        ['6'] = { 'n', 'x' },
+        ['7'] = { 'n', 'x' },
+        ['8'] = { 'n', 'x' },
+        ['9'] = { 'n', 'x' },
+        ['c'] = { 'n' },
+        ['C'] = { 'n' },
+        ['d'] = { 'n' },
+        ['x'] = { 'n' },
+        ['X'] = { 'n' },
+        ['y'] = { 'n' },
+        ['Y'] = { 'n' },
+        ['p'] = { 'n' },
+        ['P'] = { 'n' },
+        ['.'] = { 'n' },
+        ['='] = { 'n' },
+        ['<'] = { 'n' },
+        ['>'] = { 'n' },
+        ['J'] = { 'n' },
+        ['gJ'] = { 'n' },
+        ['~'] = { 'n' },
+        ['g~'] = { 'n' },
+        ['gu'] = { 'n' },
+        ['gU'] = { 'n' },
+        ['gq'] = { 'n' },
+        ['gw'] = { 'n' },
+        ['g?'] = { 'n' },
+      },
+      restricted_keys = {
+        ['h'] = { 'n', 'x' },
+        ['j'] = { 'n', 'x' },
+        ['w'] = { 'n', 'x' },
+        ['b'] = { 'n', 'x' },
+        ['k'] = { 'n', 'x' },
+        ['l'] = { 'n', 'x' },
+        ['-'] = { 'n', 'x' },
+        ['+'] = { 'n', 'x' },
+        ['gj'] = { 'n', 'x' },
+        ['gk'] = { 'n', 'x' },
+        ['<CR>'] = { 'n', 'x' },
+        ['<C-M>'] = { 'n', 'x' },
+        ['<C-N>'] = { 'n', 'x' },
+        ['<C-P>'] = { 'n', 'x' },
+      },
+    },
+  },
+  {
     'luckasRanarison/tailwind-tools.nvim',
     name = 'tailwind-tools',
     build = ':UpdateRemotePlugins',
@@ -870,9 +921,11 @@ First think step-by-step - describe your plan for what to build in pseudocode, w
         -- For customization, refer to Install > Configuration in the Documentation/Readme
       }
       require('gp').setup(conf)
-
-      -- Setup shortcuts here (see Usage > Shortcuts in the Documentation/Readme)
     end,
+    keys = {
+      { 'gp', ':GpChatToggle<CR>', mode = 'n' },
+      { 'gp', ':<C-U>echo execute("\'<,\'>GpChatPaste")<CR>', mode = 'v' },
+    },
   },
   { 'mbbill/undotree', lazy = false },
   {

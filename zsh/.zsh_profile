@@ -11,6 +11,9 @@ zstyle ':completion:*' special-dirs false
 alias cpcb="xclip -sel clip"
 alias xresreload="xrdb -merge ~/.Xresources"
 
+alias lsa="ls -a"
+alias lsd="ls -d */"
+
 tldr() {
     command tldr "$@" | less
 }

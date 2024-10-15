@@ -513,6 +513,15 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
+        vtsls = {
+          settings = {
+            typescript = {
+              preferences = {
+                includePackageJsonAutoImports = 'on',
+              },
+            },
+          },
+        },
 
         lua_ls = {
           -- cmd = {...},
@@ -565,7 +574,6 @@ require('lazy').setup({
         'css-lsp',
         'angular-language-server',
         'gofumpt',
-        'typescript-language-server',
         'lua-language-server',
         'prettierd',
         'emmet-language-server',

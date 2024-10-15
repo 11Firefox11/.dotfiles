@@ -417,7 +417,26 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          local function code_action_with_cursor_adjustment()
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            local row, col = cursor[1], cursor[2]
+            local line = vim.api.nvim_get_current_line()
+
+            -- Check if at start of a word or whitespace
+            local move_cursor = (col == 0) or (line:sub(col + 1, col + 1):match '%s' == nil)
+
+            if move_cursor then
+              vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+            end
+
+            vim.lsp.buf.code_action()
+
+            if move_cursor then
+              vim.api.nvim_win_set_cursor(0, { row, col })
+            end
+          end
+
+          map('<leader>ca', code_action_with_cursor_adjustment, '[C]ode [A]ction')
           vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, { buffer = event.buf, desc = 'LSP: [C]ode [A]ction' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.

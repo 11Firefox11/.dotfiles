@@ -71,6 +71,9 @@ vim.keymap.set('i', 'jj', '<Esc>', { nowait = true, desc = 'Quick esc in insert'
 -- lsp restart bind
 vim.keymap.set('n', '<leader>lr', '<cmd>LspRestart<cr>', { desc = 'Restart LSP' })
 
+-- normal mode signature help
+vim.keymap.set('n', '<leader>k', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
+
 -- edit current directory
 vim.keymap.set('n', '<leader>C', '<cmd>e %:p:h/<cr>', { desc = 'Edit current directory relative to open buffer' })
 
@@ -538,7 +541,7 @@ require('lazy').setup({
           },
         },
         emmet_ls = {
-          filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php' },
+          filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue' },
           init_options = {
             includeLanguages = {},
             excludeLanguages = {},
@@ -803,6 +806,12 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      require('mini.completion').setup {
+        -- 10 ^ 7 to disable completion (source: help file)
+        delay = { completion = 10000000 },
+        lsp_completion = { auto_setup = false },
+        window = { info = { border = 'solid' }, signature = { border = 'solid' } },
+      }
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
@@ -840,6 +849,20 @@ require('lazy').setup({
     end,
   },
   { 'ThePrimeagen/vim-be-good' },
+  {
+    'stevearc/oil.nvim',
+    opts = {
+      keymaps = {
+        ['<C-h>'] = false,
+        ['<leader>h'] = { 'actions.select', opts = { horizontal = true }, desc = 'Open the entry in a horizontal split' },
+        ['<leader>v'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a horizontal split' },
+        ['<C-l>'] = false,
+      },
+    },
+    -- Optional dependencies
+    dependencies = { { 'echasnovski/mini.icons', opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
+  },
   {
     'm4xshen/hardtime.nvim',
     dependencies = { 'MunifTanjim/nui.nvim', 'nvim-lua/plenary.nvim' },
@@ -1107,7 +1130,7 @@ First think step-by-step - describe your plan for what to build in pseudocode, w
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -1138,22 +1161,6 @@ First think step-by-step - describe your plan for what to build in pseudocode, w
     },
   },
 })
-
--- harpoon good telescope
-local themes = require 'telescope.themes'
-local hm_actions = require 'telescope._extensions.harpoon_marks.actions'
-vim.keymap.set('n', '<leader>h', function()
-  require('telescope').extensions.harpoon.marks(themes.get_dropdown {
-    previewer = false,
-    layout_config = { width = 0.6 },
-    path_display = { truncate = 10 },
-    attach_mappings = function(_, map)
-      map('i', '<c-d>', hm_actions.delete_mark_selections)
-      map('n', '<c-d>', hm_actions.delete_mark_selections)
-      return true
-    end,
-  })
-end, { desc = 'open harpoon telescope window' })
 
 -- go setup
 require('lspconfig').gopls.setup {
@@ -1192,27 +1199,6 @@ require('lspconfig').gopls.setup {
       gofumpt = true,
     },
   },
-}
-
--- Icons support
-vim.fn.setcellwidths {
-  { 0x23fb, 0x23fe, 2 }, -- IEC Power Symbols
-  { 0x2665, 0x2665, 2 }, -- Octicons
-  { 0x2b58, 0x2b58, 2 }, -- IEC Power Symbols
-  { 0xe000, 0xe00a, 2 }, -- Pomicons
-  { 0xe0c0, 0xe0c8, 2 }, -- Powerline Extra
-  { 0xe0ca, 0xe0ca, 2 }, -- Powerline Extra
-  { 0xe0cc, 0xe0d7, 2 }, -- Powerline Extra
-  { 0xe200, 0xe2a9, 2 }, -- Font Awesome Extension
-  { 0xe300, 0xe3e3, 2 }, -- Weather Icons
-  { 0xe5fa, 0xe6b5, 2 }, -- Seti-UI + Custom
-  { 0xe700, 0xe7c5, 2 }, -- Devicons
-  { 0xea60, 0xec1e, 2 }, -- Codicons
-  { 0xed00, 0xefce, 2 }, -- Font Awesome
-  { 0xf000, 0xf2ff, 2 }, -- Font Awesome
-  { 0xf300, 0xf375, 2 }, -- Font Logos
-  { 0xf400, 0xf533, 2 }, -- Octicons
-  { 0xf0001, 0xf1af0, 2 }, -- Material Design
 }
 
 -- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet, do more diffview.nvim, make things actually lazy load (for example with cmd = )

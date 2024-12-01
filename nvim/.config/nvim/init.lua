@@ -1,5 +1,6 @@
 -- Set <space> as the leader key See `:help mapleadersearch files
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+vim.opt.scrollbind = false
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
@@ -62,6 +63,14 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+vim.api.nvim_create_user_command('Here', function(opts)
+  local original_wd = vim.fn.getcwd()
+  local parent_path = vim.fn.expand '%:h'
+  vim.cmd('lcd ' .. parent_path)
+  vim.cmd('!' .. opts.args)
+  vim.cmd('lcd ' .. original_wd)
+end, { nargs = '+' })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -517,13 +526,31 @@ require('lazy').setup({
         -- tsserver = {},
         --
         vtsls = {
+          enabled = true,
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           settings = {
+            vtsls = { tsserver = { globalPlugins = {} } },
             typescript = {
               preferences = {
                 includePackageJsonAutoImports = 'on',
               },
             },
           },
+          before_init = function(params, config)
+            -- ENABLE FOR .vue files
+            -- TODO: make it so this won't make my editor lag if not vue is opened
+            -- local result = vim.system({ 'npm', 'query', '#vue' }, { cwd = params.workspaceFolders[1].name, text = true }):wait()
+            -- if result.stdout ~= '[]' then
+            --   local vuePluginConfig = {
+            --     name = '@vue/typescript-plugin',
+            --     location = require('mason-registry').get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server',
+            --     languages = { 'vue' },
+            --     configNamespace = 'typescript',
+            --     enableForWorkspaceTypeScriptVersions = true,
+            --   }
+            --   table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
+            -- end
+          end,
         },
 
         lua_ls = {
@@ -541,7 +568,7 @@ require('lazy').setup({
           },
         },
         emmet_ls = {
-          filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue' },
+          filetypes = { 'css', 'eruby', 'html', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue' },
           init_options = {
             includeLanguages = {},
             excludeLanguages = {},
@@ -637,9 +664,10 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        html = { { 'prettierd', 'prettier' } },
-        css = { { 'prettierd', 'prettier' } },
-        scss = { { 'prettierd', 'prettier' } },
+        html = { { 'prettier' } },
+        css = { { 'prettier' } },
+        scss = { { 'prettier' } },
+        astro = { { 'prettier' } },
       },
     },
   },
@@ -1130,7 +1158,7 @@ First think step-by-step - describe your plan for what to build in pseudocode, w
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -1204,5 +1232,18 @@ require('lspconfig').gopls.setup {
 -- Things to care about in the future: some kind of surround, multi cursor or learn macros at least (https://vonheikemen.github.io/devlog/tools/how-to-survive-without-multiple-cursors-in-vim/), some fun keybinds from videos (bnext, dap, ctrl-^), learn more emmet, do more diffview.nvim, make things actually lazy load (for example with cmd = )
 -- Fix icon width for Nerd Fonts v3.2.1.
 
+vim.cmd [[
+  augroup ft_js_settings
+    autocmd!
+    autocmd FileType javascript setlocal tabstop=2 shiftwidth=2 noexpandtab
+  augroup END
+]]
+
+vim.cmd [[
+  augroup css_settings
+    autocmd!
+    autocmd FileType css setlocal tabstop=2 shiftwidth=2 noexpandtab
+  augroup END
+]]
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

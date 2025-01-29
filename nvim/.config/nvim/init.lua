@@ -92,8 +92,16 @@ vim.keymap.set('n', '<leader>P', '"+p', { desc = 'Paste from system clipboard', 
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Copy/yank to system clipboard', noremap = true })
 vim.keymap.set('n', '<leader>Y', 'gg"+yG', { desc = 'Copy/yank whole file to system clipboard', noremap = true })
 
--- sessionizer
+-- tmux stuff
 vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww -n "sessionizer" " tmux-sessionizer"<CR>', { desc = 'Run tmux sessionizer on new tmux pane' })
+vim.keymap.set('n', '<C-x>', function()
+  local term_program = os.getenv 'TERM_PROGRAM'
+  if term_program ~= 'tmux' then
+    vim.cmd [[:silent !tmux attach \; choose-session]]
+  else
+    vim.cmd [[:silent !tmux choose-session]]
+  end
+end, { desc = 'Conditionally attach or choose tmux session based on TERM_PROGRAM' })
 
 -- Create moving up and down keymaps
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true, desc = 'Move selection down' })

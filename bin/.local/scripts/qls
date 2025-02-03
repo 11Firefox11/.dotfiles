@@ -53,7 +53,7 @@ if [[ "$HANDLE" = true ]]; then
       if [[ $MIME_TYPE == "text/html" ]]; then
         FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
       fi
-      if [[ $MIME_TYPE == text/* ]]; then
+      if [[ $MIME_TYPE == text/* || $MIME_TYPE == "application/json" ]]; then
         echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
       else
         echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"

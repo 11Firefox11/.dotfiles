@@ -16,6 +16,10 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
+function logInfo() {
+  echo "[$(date +"%H:%M:%S")]: $1";
+}
+
 function NotFound {
   echo -e "HTTP/1.1 404 Not Found\r\n\r\nNot Found"
   exit 0
@@ -71,7 +75,7 @@ fi
 PORT=${PORT:-5555}
 SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
 
-echo "Listening on localhost:$PORT..."
+logInfo "Listening on http://localhost:$PORT/"
 output=$(socat TCP-LISTEN:$PORT,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
 exit_code=$?
 if [[ "$output" == *"Permission denied" ]]; then

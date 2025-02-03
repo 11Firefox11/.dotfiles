@@ -50,26 +50,36 @@ if [[ "$HANDLE" = true ]]; then
       exit 0
     fi
 
-    SAFEFILE="./${FILEPATH}"
+    if [[ "$FILEPATH" == /* ]]; then
+        SAFEFILE=".${FILEPATH}"
+    else
+        SAFEFILE="./${FILEPATH}"
+    fi
+
     if [[ "$SAFEFILE" != *..* ]]; then
       if [[ -d "$SAFEFILE" ]]; then
         if [[ -e "$SAFEFILE/index.html" ]]; then
             SAFEFILE="$SAFEFILE/index.html"
         else
             INDEX_FILE=$(find "$SAFEFILE" -maxdepth 1 -type f -name "index*" | sort | head -1)
-            SAFEFILE="$INDEX_FILE"
+            if [[ -n "$INDEX_FILE" ]]; then
+                SAFEFILE="$INDEX_FILE"
+            fi
         fi
+        echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $SAFEFILE\r\n"
+        exit 0
       fi
       if [[ -e "$SAFEFILE" ]]; then
+        FILE_NAME=$(basename $SAFEFILE)
         MIME_TYPE=$(mimetype -b "$SAFEFILE")
         FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
         if [[ $MIME_TYPE == "text/html" ]]; then
           FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
         fi
         if [[ $MIME_TYPE == text/* || $MIME_TYPE == "application/json" ]]; then
-          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nContent-Disposition: inline; filename=\"$FILE_NAME\"\r\n"
         else
-          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\nContent-Disposition: inline; filename=\"index.js\"\r\n"
         fi
         dd if="$SAFEFILE" bs=1M status=none
         [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"

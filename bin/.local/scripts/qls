@@ -51,20 +51,30 @@ if [[ "$HANDLE" = true ]]; then
     fi
 
     SAFEFILE="./${FILEPATH}"
-    if [[ "$SAFEFILE" != *..* && -e "$SAFEFILE" ]]; then
-      MIME_TYPE=$(mimetype -b "$SAFEFILE")
-      FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
-      if [[ $MIME_TYPE == "text/html" ]]; then
-        FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
+    if [[ "$SAFEFILE" != *..* ]]; then
+      if [[ -d "$SAFEFILE" ]]; then
+        if [[ -e "$SAFEFILE/index.html" ]]; then
+            SAFEFILE="$SAFEFILE/index.html"
+        else
+            INDEX_FILE=$(find "$SAFEFILE" -maxdepth 1 -type f -name "index*" | sort | head -1)
+            SAFEFILE="$INDEX_FILE"
+        fi
       fi
-      if [[ $MIME_TYPE == text/* || $MIME_TYPE == "application/json" ]]; then
-        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
-      else
-        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
+      if [[ -e "$SAFEFILE" ]]; then
+        MIME_TYPE=$(mimetype -b "$SAFEFILE")
+        FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
+        if [[ $MIME_TYPE == "text/html" ]]; then
+          FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
+        fi
+        if [[ $MIME_TYPE == text/* || $MIME_TYPE == "application/json" ]]; then
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
+        else
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
+        fi
+        dd if="$SAFEFILE" bs=1M status=none
+        [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"
+        exit 0
       fi
-      dd if="$SAFEFILE" bs=1M status=none
-      [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"
-      exit 0
     fi
   fi
   NotFound
@@ -98,7 +108,6 @@ fi
 # TODO: handle ignore
 # TODO: add option for non text cache
 # TODO: add dependency checks
-# TODO: / redirect to index.html
 # TODO: show .md files as html
 
 # vim: ts=2 sts=2 sw=2 et

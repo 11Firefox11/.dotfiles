@@ -75,6 +75,16 @@ fi
 PORT=${PORT:-5555}
 SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
 
+if lsof -i ":$PORT" | grep LISTEN > /dev/null 2>&1; then
+  if [[ "$PORT" -eq 5555 ]]; then
+    PORT=$(shuf -i 1024-65535 -n 1)
+    logInfo "Port 5555 is in use. Generated a random port: $PORT."
+  else
+    logInfo "Port $PORT is in use."
+    exit 1
+  fi
+fi
+
 logInfo "Listening on http://localhost:$PORT/"
 output=$(socat TCP-LISTEN:$PORT,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
 exit_code=$?

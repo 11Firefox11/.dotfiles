@@ -185,3 +185,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+PROG=gitea _CLI_ZSH_AUTOCOMPLETE_HACK=1 source "/home/awakefox/.config/tea/autocomplete.zsh"
+export PATH="/home/awakefox/.config/herd-lite/bin:$PATH"
+export PHP_INI_SCAN_DIR="/home/awakefox/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"

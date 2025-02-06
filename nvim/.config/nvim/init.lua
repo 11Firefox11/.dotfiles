@@ -108,7 +108,10 @@ vim.keymap.set('n', '<leader>x', '<cmd>!chmod +x %<CR>', { silent = true, desc =
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>q', '<cmd>:cclose<CR>', { desc = 'close quickfix window' })
+vim.keymap.set('v', '<leader>q', '<cmd>:cclose<CR>', { desc = 'close quickfix window' })
+vim.keymap.set('n', ']c', '<cmd>:cnext<CR>', { desc = 'previous quickfix' })
+vim.keymap.set('n', '[c', '<cmd>:cprev<CR>', { desc = 'next quickfix' })
 
 -- Make <C-w>hjkl resize because simple <C-hjkl> is used for navigation
 vim.keymap.set('n', '<C-w>h', '<C-w>>', { noremap = true, silent = true })
@@ -878,12 +881,61 @@ require('lazy').setup({
   },
   { 'ThePrimeagen/vim-be-good' },
   {
+    'jellydn/hurl.nvim',
+    dependencies = {
+      'MunifTanjim/nui.nvim',
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    ft = 'hurl',
+    opts = {
+      -- Show debugging info
+      debug = false,
+      -- Show notification on run
+      show_notification = false,
+      -- Show response in popup or split
+      mode = 'split',
+      -- Default formatter
+      formatters = {
+        json = { 'jq' }, -- Make sure you have install jq in your system, e.g: brew install jq
+        html = {
+          'prettier', -- Make sure you have install prettier in your system, e.g: npm install -g prettier
+          '--parser',
+          'html',
+        },
+        xml = {
+          'tidy', -- Make sure you have installed tidy in your system, e.g: brew install tidy-html5
+          '-xml',
+          '-i',
+          '-q',
+        },
+      },
+      -- Default mappings for the response popup or split views
+      mappings = {
+        close = 'q', -- Close the response popup or split view
+        next_panel = '<C-n>', -- Move to the next response popup window
+        prev_panel = '<C-p>', -- Move to the previous response popup window
+      },
+    },
+    keys = {
+      -- Run API request
+      { '<leader>A', '<cmd>HurlRunner<CR>', desc = 'Run All requests' },
+      { '<leader>a', '<cmd>HurlRunnerAt<CR>', desc = 'Run Api request' },
+      { '<leader>te', '<cmd>HurlRunnerToEntry<CR>', desc = 'Run Api request to entry' },
+      { '<leader>tE', '<cmd>HurlRunnerToEnd<CR>', desc = 'Run Api request from current entry to end' },
+      { '<leader>tm', '<cmd>HurlToggleMode<CR>', desc = 'Hurl Toggle Mode' },
+      { '<leader>tv', '<cmd>HurlVerbose<CR>', desc = 'Run Api in verbose mode' },
+      { '<leader>tV', '<cmd>HurlVeryVerbose<CR>', desc = 'Run Api in very verbose mode' },
+      -- Run Hurl request in visual mode
+      { '<leader>h', ':HurlRunner<CR>', desc = 'Hurl Runner', mode = 'v' },
+    },
+  },
+  {
     'stevearc/oil.nvim',
     opts = {
       keymaps = {
         ['<C-h>'] = false,
-        ['<leader>h'] = { 'actions.select', opts = { horizontal = true }, desc = 'Open the entry in a horizontal split' },
-        ['<leader>v'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a horizontal split' },
+        ['<C-v>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a horizontal split' },
         ['<C-l>'] = false,
       },
     },
@@ -980,7 +1032,7 @@ require('lazy').setup({
             name = 'ChatCopilot',
             chat = true,
             command = false,
-            model = { model = 'gpt-4o', temperature = 1.1, top_p = 1 },
+            model = { model = 'claude-3.5-sonnet', temperature = 1.1, top_p = 1 },
             system_prompt = [[
 You are an AI programming assistant embedded into NeoVim text editor.
 Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.

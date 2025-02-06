@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 REFRESH_JS="<script>(async () => { let failed = false; while (true) { try { const response = await fetch('/__watch'); if (failed) { window.location.reload(); } const reader = response.body.getReader(); while (true) { const { done, value } = await reader.read(); if (done) break; const valueDecoded = (new TextDecoder().decode(value)); window.location.reload(); } } catch { await new Promise(r => setTimeout(r, 1000)); failed = true; } } })();</script>"
+MARKDOWN_ADDED='<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown.min.css" integrity="sha512-BrOPA520KmDMqieeM7XFe6a3u3Sb3F1JBaQnrIAmWg3EYrciJ+Qqe6ZcKCdfPv26rGcgTrJnZ/IdQEct8h3Zhw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>'
+MARKDOWN_BODY='class="markdown-body" style="max-width: 70ch; line-height: 150%; margin: auto; padding: 1.25rem 0.75rem;"'
 
 while [[ "$1" != "" ]]; do
   case $1 in
@@ -15,6 +17,10 @@ while [[ "$1" != "" ]]; do
   esac
   shift
 done
+
+function logInfo() {
+  echo "[$(date +"%H:%M:%S")]: $1";
+}
 
 function NotFound {
   echo -e "HTTP/1.1 404 Not Found\r\n\r\nNot Found"
@@ -46,21 +52,52 @@ if [[ "$HANDLE" = true ]]; then
       exit 0
     fi
 
-    SAFEFILE="./${FILEPATH}"
-    if [[ "$SAFEFILE" != *..* && -e "$SAFEFILE" ]]; then
-      MIME_TYPE=$(mimetype -b "$SAFEFILE")
-      FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
-      if [[ $MIME_TYPE == "text/html" ]]; then
-        FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
+    if [[ "$FILEPATH" == /* ]]; then
+        SAFEFILE=".${FILEPATH}"
+    else
+        SAFEFILE="./${FILEPATH}"
+    fi
+
+    if [[ "$SAFEFILE" != *..* ]]; then
+      if [[ -d "$SAFEFILE" ]]; then
+        if [[ -e "$SAFEFILE/index.html" ]]; then
+            SAFEFILE="$SAFEFILE/index.html"
+        else
+            INDEX_FILE=$(find "$SAFEFILE" -maxdepth 1 -type f -name "index*" | sort | head -1)
+            if [[ -n "$INDEX_FILE" ]]; then
+                SAFEFILE="$INDEX_FILE"
+            fi
+        fi
+        echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $SAFEFILE\r\n"
+        exit 0
       fi
-      if [[ $MIME_TYPE == text/* ]]; then
-        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\n"
-      else
-        echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\n"
+      if [[ -e "$SAFEFILE" ]]; then
+        FILE_NAME=$(basename $SAFEFILE)
+        MIME_TYPE=$(mimetype -b "$SAFEFILE")
+        if [[ $MIME_TYPE == "text/markdown" ]]; then
+          MIME_TYPE="text/html"
+          CONTENT=$(mdtohtml -page -attributes "$SAFEFILE")
+          FILE_SIZE=$(echo -n "$CONTENT" | wc -c)
+          FILE_SIZE=$(($FILE_SIZE + ${#MARKDOWN_ADDED} + ${#MARKDOWN_BODY} + 2))
+        else
+          FILE_SIZE=$(stat --format="%s" "$SAFEFILE")
+        fi
+        if [[ $MIME_TYPE == "text/html" ]]; then
+          FILE_SIZE=$(($FILE_SIZE + ${#REFRESH_JS}))
+        fi
+        if [[ $MIME_TYPE == text/* || $MIME_TYPE == "application/json" ]]; then
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nContent-Disposition: inline; filename=\"$FILE_NAME\"\r\n"
+        else
+          echo -e "HTTP/1.1 200 OK\r\nContent-Type: $MIME_TYPE\r\nContent-Length: $FILE_SIZE\r\nCache-Control: max-age=3600\r\nContent-Disposition: inline; filename=\"$FILE_NAME\"\r\n"
+        fi
+        if [[ "$SAFEFILE" == *.md ]]; then
+            mdtohtml -page -attributes "$SAFEFILE" | sed "s|<body>|<body $MARKDOWN_BODY>$MARKDOWN_ADDED|"
+        else
+            dd if="$SAFEFILE" bs=1M status=none
+        fi
+        [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"
+        exit 0
       fi
-      dd if="$SAFEFILE" bs=1M status=none
-      [[ $MIME_TYPE == "text/html" ]] && echo -e "$REFRESH_JS"
-      exit 0
     fi
   fi
   NotFound
@@ -71,7 +108,17 @@ fi
 PORT=${PORT:-5555}
 SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
 
-echo "Listening on localhost:$PORT..."
+if lsof -i ":$PORT" | grep LISTEN > /dev/null 2>&1; then
+  if [[ "$PORT" -eq 5555 ]]; then
+    PORT=$(shuf -i 1024-65535 -n 1)
+    logInfo "Port 5555 is in use. Generated a random port: $PORT."
+  else
+    logInfo "Port $PORT is in use."
+    exit 1
+  fi
+fi
+
+logInfo "Listening on http://localhost:$PORT/"
 output=$(socat TCP-LISTEN:$PORT,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
 exit_code=$?
 if [[ "$output" == *"Permission denied" ]]; then
@@ -82,9 +129,7 @@ elif [[ $exit_code -ne 0 ]]; then
 fi
 
 # TODO: handle ignore
-# TODO: add option for non text cache
-# TODO: add dependency checks
-# TODO: / redirect to index.html
-# TODO: show .md files as html
+# TODO: better cache (images need cache, but js files don't update because of cache)
+# TODO: add dependency checks (for example for markdown: https://github.com/gomarkdown/markdown)
 
 # vim: ts=2 sts=2 sw=2 et

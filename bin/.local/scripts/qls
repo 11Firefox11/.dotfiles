@@ -27,49 +27,54 @@ function NotFound {
   exit 0
 }
 
+function TemporaryRedirect {
+  echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $1\r\n"
+  exit 0
+}
+
 if [[ "$HANDLE" = true ]]; then
   while read line; do
     trline="${line//$'\r'/}"
     [ -z "$trline" ] && break
 
     if [[ "$trline" =~ ^GET\ (/.*)\ HTTP ]]; then
-      FILEPATH="${BASH_REMATCH[1]}"
+      FULLPATH="${BASH_REMATCH[1]}"
       break
     fi
   done
 
-  if [[ -n "$FILEPATH" ]]; then
-    if [[ "$FILEPATH" == "/__watch" ]]; then
-      RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\n"
-      echo -e $RESPONSE
-      while true; do
-        changedPath=$(inotifywait --event=modify,move,create,delete,delete_self --recursive . --format "%w%f" -q)
-        size=$(echo -n "$changedPath" | wc -c | xargs printf "%X")
-        echo -ne "$size\r\n$changedPath\r\n"
-      done
+  if [[ "$FULLPATH" == "/__watch" ]]; then
+    RESPONSE="HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\n"
+    echo -e $RESPONSE
+    while true; do
+      changedPath=$(inotifywait --event=modify,move,create,delete,delete_self --recursive . --format "%w%f" -q)
+      size=$(echo -n "$changedPath" | wc -c | xargs printf "%X")
+      echo -ne "$size\r\n$changedPath\r\n"
+    done
 
-      echo -ne "0\r\n\r\n"
-      exit 0
-    fi
+    echo -ne "0\r\n\r\n"
+    exit 0
+  fi
 
-    if [[ "$FILEPATH" == /* ]]; then
-        SAFEFILE=".${FILEPATH}"
+  if [[ -n "$FULLPATH" ]]; then
+    CLEANPATH=$(echo "$FULLPATH" | cut -d'?' -f1)
+    if [[ "$CLEANPATH" == /* ]]; then
+      SAFEFILE=".$CLEANPATH"
     else
-        SAFEFILE="./${FILEPATH}"
+      SAFEFILE="./$CLEANPATH"
     fi
 
     if [[ "$SAFEFILE" != *..* ]]; then
       if [[ -d "$SAFEFILE" ]]; then
         if [[ -e "$SAFEFILE/index.html" ]]; then
-            SAFEFILE="$SAFEFILE/index.html"
-        else
+            TemporaryRedirect "/$SAFEFILE/index.html"
+          else
             INDEX_FILE=$(find "$SAFEFILE" -maxdepth 1 -type f -name "index*" | sort | head -1)
             if [[ -n "$INDEX_FILE" ]]; then
-                SAFEFILE="$INDEX_FILE"
+                TemporaryRedirect "/$INDEX_FILE"
             fi
         fi
-        echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $SAFEFILE\r\n"
-        exit 0
+        NotFound
       fi
       if [[ -e "$SAFEFILE" ]]; then
         FILE_NAME=$(basename $SAFEFILE)
@@ -131,5 +136,6 @@ fi
 # TODO: handle ignore
 # TODO: better cache (images need cache, but js files don't update because of cache)
 # TODO: add dependency checks (for example for markdown: https://github.com/gomarkdown/markdown)
+# TODO: refresh CSS without page refresh
 
 # vim: ts=2 sts=2 sw=2 et

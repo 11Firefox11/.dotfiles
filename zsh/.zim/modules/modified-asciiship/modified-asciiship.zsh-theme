@@ -12,6 +12,16 @@ _prompt_asciiship_keymap_select() {
   zle reset-prompt
   zle -R
 }
+
+_prompt_asciiship_docker_context() {
+  if (( $+commands[docker] )); then
+    local context=$(docker context show 2>/dev/null)
+    if [[ -n "${context}" && "${context}" != "default" ]]; then
+      echo " docker %B%F{blue}${context}%f%b"
+    fi
+  fi
+}
+
 if autoload -Uz is-at-least && is-at-least 5.3; then
   autoload -Uz add-zle-hook-widget && \
       add-zle-hook-widget -Uz keymap-select _prompt_asciiship_keymap_select
@@ -49,6 +59,6 @@ if (( ${+functions[git-info]} )); then
 fi
 
 PS1='
-%(!.%B%F{red}%n%f%b in .${SSH_TTY:+"%B%F{yellow}%n%f%b in "})${SSH_TTY:+"%B%F{green}%m%f%b in "}%B%F{cyan}%~%f%b${(e)git_info[prompt]}${VIRTUAL_ENV:+" via %B%F{yellow}${VIRTUAL_ENV:t}%f%b"}${duration_info}
+%(!.%B%F{red}%n%f%b in .${SSH_TTY:+"%B%F{yellow}%n%f%b in "})${SSH_TTY:+"%B%F{green}%m%f%b in "}%B%F{cyan}%~%f%b${(e)git_info[prompt]}${VIRTUAL_ENV:+" via %B%F{yellow}${VIRTUAL_ENV:t}%f%b"}$(_prompt_asciiship_docker_context)${duration_info}
 %B%(1j.%F{blue}*%f .)%(?.%F{green}.%F{red}%? )$(_prompt_asciiship_vimode)%f%b '
-unset RPS1
+unset rps1

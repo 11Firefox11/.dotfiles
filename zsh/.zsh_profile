@@ -46,3 +46,9 @@ bindkey -r "^[[A"
 bindkey -r "^[[B"
 bindkey "^n" history-substring-search-up
 bindkey "^p" history-substring-search-down
+
+# docker aliases
+alias Dc='docker context use'
+alias DS='docker stack'
+alias Ds='docker service'
+alias Dstopall='docker stop $(docker ps -a -q)'

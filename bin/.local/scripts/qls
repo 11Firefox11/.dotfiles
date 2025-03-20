@@ -28,7 +28,8 @@ function NotFound {
 }
 
 function TemporaryRedirect {
-  echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $1\r\n"
+  cleaned_url=$(echo "$1" | sed 's/\/\+/\//g')
+  echo -e "HTTP/1.1 307 Temporary Redirect\r\nLocation: $cleaned_url\r\n"
   exit 0
 }
 
@@ -125,6 +126,7 @@ fi
 
 logInfo "Listening on http://localhost:$PORT/"
 output=$(socat TCP-LISTEN:$PORT,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
+# output=$(socat TCP-LISTEN:$PORT,bind=0.0.0.0,fork,reuseaddr EXEC:"$SCRIPT_PATH --handle --ignore=\"\$IGNORE\"" 2>&1)
 exit_code=$?
 if [[ "$output" == *"Permission denied" ]]; then
   echo "Error: $output"
@@ -137,5 +139,8 @@ fi
 # TODO: better cache (images need cache, but js files don't update because of cache)
 # TODO: add dependency checks (for example for markdown: https://github.com/gomarkdown/markdown)
 # TODO: refresh CSS without page refresh
+# TODO: path resolution fix (for example temporary redirect has double slash remover, that shouldn't be a feature)
+# TODO: make a mode so if go to path then "Index of [DIR]" with links to locations
+# TODO: add host arg so it can be ran on 0.0.0.0
 
 # vim: ts=2 sts=2 sw=2 et

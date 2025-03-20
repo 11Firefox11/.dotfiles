@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+[ "$#" -lt 2 ] && { echo "Usage: $0 \"Title\" command [args...]"; exit 1; }
+
+title="$1"
+shift
+
+current_state=$(tmux show-window-option automatic-rename 2>/dev/null | cut -d' ' -f2)
+[ -z "$current_state" ] && current_state="on"
+
+cleanup() {
+    tmux set-window-option automatic-rename on
+    tmux set-window-option automatic-rename "$current_state"
+}
+
+tmux set-window-option automatic-rename off
+tmux rename-window "$title"
+
+trap cleanup EXIT
+
+"$@"

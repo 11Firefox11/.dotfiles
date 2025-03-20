@@ -550,17 +550,14 @@ require('lazy').setup({
           before_init = function(params, config)
             -- ENABLE FOR .vue files
             -- TODO: make it so this won't make my editor lag if not vue is opened
-            -- local result = vim.system({ 'npm', 'query', '#vue' }, { cwd = params.workspaceFolders[1].name, text = true }):wait()
-            -- if result.stdout ~= '[]' then
-            --   local vuePluginConfig = {
-            --     name = '@vue/typescript-plugin',
-            --     location = require('mason-registry').get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server',
-            --     languages = { 'vue' },
-            --     configNamespace = 'typescript',
-            --     enableForWorkspaceTypeScriptVersions = true,
-            --   }
-            --   table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
-            -- end
+            -- local vuePluginConfig = {
+            --   name = '@vue/typescript-plugin',
+            --   location = require('mason-registry').get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server',
+            --   languages = { 'vue' },
+            --   configNamespace = 'typescript',
+            --   enableForWorkspaceTypeScriptVersions = true,
+            -- }
+            -- table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
           end,
         },
 
@@ -578,15 +575,15 @@ require('lazy').setup({
             },
           },
         },
-        emmet_ls = {
+        emmet_language_server = {
           filetypes = { 'css', 'eruby', 'html', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue' },
           init_options = {
             includeLanguages = {},
             excludeLanguages = {},
             extensionsPath = {},
             preferences = {},
-            showAbbreviationSuggestions = true,
-            showExpandedAbbreviation = 'always',
+            showAbbreviationSuggestions = false,
+            showExpandedAbbreviation = 'never',
             showSuggestionsAsSnippets = false,
             syntaxProfiles = {},
             variables = {},
@@ -617,7 +614,6 @@ require('lazy').setup({
         'gofumpt',
         'lua-language-server',
         'prettierd',
-        'emmet-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -675,10 +671,11 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        html = { { 'prettier' } },
-        css = { { 'prettier' } },
-        scss = { { 'prettier' } },
-        astro = { { 'prettier' } },
+        html = { 'prettier' },
+        vue = { 'prettier', 'biome' },
+        css = { 'prettier' },
+        scss = { 'prettier' },
+        astro = { 'prettier' },
       },
     },
   },
@@ -928,7 +925,7 @@ require('lazy').setup({
     keys = {
       -- Run API request
       { '<leader>A', '<cmd>HurlRunner<CR>', desc = 'Run All requests' },
-      { '<leader>a', '<cmd>HurlRunnerAt<CR>', desc = 'Run Api request' },
+      -- { '<leader>a', '<cmd>HurlRunnerAt<CR>', desc = 'Run Api request' },
       { '<leader>te', '<cmd>HurlRunnerToEntry<CR>', desc = 'Run Api request to entry' },
       { '<leader>tE', '<cmd>HurlRunnerToEnd<CR>', desc = 'Run Api request from current entry to end' },
       { '<leader>tm', '<cmd>HurlToggleMode<CR>', desc = 'Hurl Toggle Mode' },
@@ -1019,12 +1016,6 @@ require('lazy').setup({
   },
   { 'sindrets/diffview.nvim' },
   {
-    'olrtg/nvim-emmet',
-    config = function()
-      vim.keymap.set({ 'n', 'v' }, '<leader>xe', require('nvim-emmet').wrap_with_abbreviation, { desc = 'Emmet wrap with abbreviation' })
-    end,
-  },
-  {
     'robitx/gp.nvim',
     config = function()
       local conf = {
@@ -1040,7 +1031,7 @@ require('lazy').setup({
             name = 'ChatCopilot',
             chat = true,
             command = false,
-            model = { model = 'claude-3.5-sonnet', temperature = 1.1, top_p = 1 },
+            model = { model = 'claude-3.7-sonnet', temperature = 1.1, top_p = 1 },
             system_prompt = [[
 You are an AI programming assistant embedded into NeoVim text editor.
 Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.

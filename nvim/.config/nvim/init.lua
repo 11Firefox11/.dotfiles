@@ -538,9 +538,13 @@ require('lazy').setup({
         --
         vtsls = {
           enabled = true,
-          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'svelte' },
           settings = {
-            vtsls = { tsserver = { globalPlugins = {} } },
+            vtsls = {
+              tsserver = {
+                globalPlugins = {},
+              },
+            },
             typescript = {
               preferences = {
                 includePackageJsonAutoImports = 'on',
@@ -550,14 +554,23 @@ require('lazy').setup({
           before_init = function(params, config)
             -- ENABLE FOR .vue files
             -- TODO: make it so this won't make my editor lag if not vue is opened
-            -- local vuePluginConfig = {
-            --   name = '@vue/typescript-plugin',
-            --   location = require('mason-registry').get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server',
-            --   languages = { 'vue' },
-            --   configNamespace = 'typescript',
-            --   enableForWorkspaceTypeScriptVersions = true,
-            -- }
-            -- table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
+            local vuePluginConfig = {
+              name = '@vue/typescript-plugin',
+              location = require('mason-registry').get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server',
+              languages = { 'vue' },
+              configNamespace = 'typescript',
+              enableForWorkspaceTypeScriptVersions = true,
+            }
+            table.insert(config.settings.vtsls.tsserver.globalPlugins, vuePluginConfig)
+
+            local sveltePluginConfig = {
+              name = 'typescript-svelte-plugin',
+              location = require('mason-registry').get_package('svelte-language-server'):get_install_path() .. '/node_modules/typescript-svelte-plugin',
+              languages = { 'svelte' },
+              configNamespace = 'typescript',
+              enableForWorkspaceTypeScriptVersions = true,
+            }
+            table.insert(config.settings.vtsls.tsserver.globalPlugins, sveltePluginConfig)
           end,
         },
 
@@ -576,7 +589,7 @@ require('lazy').setup({
           },
         },
         emmet_language_server = {
-          filetypes = { 'css', 'eruby', 'html', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue' },
+          filetypes = { 'css', 'eruby', 'html', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'php', 'vue', 'svelte' },
           init_options = {
             includeLanguages = {},
             excludeLanguages = {},
@@ -673,6 +686,7 @@ require('lazy').setup({
         -- is found.
         html = { 'prettier' },
         vue = { 'prettier', 'biome' },
+        svelte = { 'prettier', 'biome' },
         css = { 'prettier' },
         scss = { 'prettier' },
         astro = { 'prettier' },
@@ -747,7 +761,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<C-y>'] = cmp.mapping.confirm { select = true, behavior = cmp.ConfirmBehavior.Insert },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -1031,7 +1045,7 @@ require('lazy').setup({
             name = 'ChatCopilot',
             chat = true,
             command = false,
-            model = { model = 'claude-3.7-sonnet', temperature = 1.1, top_p = 1 },
+            model = { model = 'claude-3.5-sonnet', temperature = 1.1, top_p = 1 },
             system_prompt = [[
 You are an AI programming assistant embedded into NeoVim text editor.
 Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.
@@ -1260,8 +1274,8 @@ require('lspconfig').gopls.setup {
         shadow = true,
       },
       codelenses = {
-        generate = false, -- show the `go generate` lens.
-        gc_details = false, -- Show a code lens toggling the display of gc's choices.
+        generate = false,
+        gc_details = false,
         test = true,
         tidy = true,
         vendor = true,
@@ -1271,9 +1285,9 @@ require('lspconfig').gopls.setup {
       usePlaceholders = true,
       completeUnimported = true,
       staticcheck = true,
-      matcher = 'Fuzzy',
+      matcher = 'fuzzy', -- Ensure lowercase for matcher
       diagnosticsDelay = '500ms',
-      symbolMatcher = 'fuzzy',
+      symbolMatcher = 'fuzzy', -- Ensure lowercase for symbolMatcher
       semanticTokens = true,
       gofumpt = true,
     },
@@ -1296,5 +1310,17 @@ vim.cmd [[
     autocmd FileType css setlocal tabstop=2 shiftwidth=2 noexpandtab
   augroup END
 ]]
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'svelte',
+  callback = function()
+    -- Add angle brackets to matchpairs
+    vim.opt_local.matchpairs:append '<:>'
+
+    -- Set up matchit for HTML tags in Svelte files
+    -- This pattern matches HTML tags like <tag> and </tag>
+    vim.b.match_words =
+      '<:>,<\\@<=[ou]l\\>[^>]*\\%(>\\|$\\):<\\@<=li\\>:<\\@<=/[ou]l>,<\\@<=dl\\>[^>]*\\%(>\\|$\\):<\\@<=d[td]\\>:<\\@<=/dl>,<\\@<=\\([^/][^ \\t>]*\\)[^>]*\\%(>\\|$\\):<\\@<=/\\1>'
+  end,
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -412,7 +412,70 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          local function filterDuplicates(array)
+            local uniqueArray = {}
+            for _, tableA in ipairs(array) do
+              local isDuplicate = false
+              for _, tableB in ipairs(uniqueArray) do
+                if vim.deep_equal(tableA, tableB) then
+                  isDuplicate = true
+                  break
+                end
+              end
+              if not isDuplicate then
+                table.insert(uniqueArray, tableA)
+              end
+            end
+            return uniqueArray
+          end
+
+          -- Then in your LspAttach callback, replace the gd mapping with:
+          map('gd', function()
+            local function on_list(options)
+              -- Filter duplicates before showing in Telescope
+              options.items = filterDuplicates(options.items)
+
+              -- If there's only one result, jump directly to it
+              if #options.items == 1 then
+                vim.fn.setqflist({}, ' ', options)
+                vim.cmd 'cfirst'
+                return
+              end
+
+              require('telescope.pickers')
+                .new({}, {
+                  prompt_title = 'LSP Definitions',
+                  finder = require('telescope.finders').new_table {
+                    results = options.items,
+                    entry_maker = function(entry)
+                      return {
+                        value = entry,
+                        display = entry.filename .. ':' .. entry.lnum,
+                        ordinal = entry.filename .. ':' .. entry.lnum,
+                        filename = entry.filename,
+                        lnum = entry.lnum,
+                        col = entry.col,
+                      }
+                    end,
+                  },
+                  sorter = require('telescope.sorters').get_generic_fuzzy_sorter(),
+                  previewer = require('telescope.previewers').vim_buffer_cat.new {},
+                  attach_mappings = function(prompt_bufnr)
+                    require('telescope.actions').select_default:replace(function()
+                      require('telescope.actions').close(prompt_bufnr)
+                      local selection = require('telescope.actions.state').get_selected_entry()
+                      vim.cmd(string.format('edit +%d %s', selection.lnum, selection.filename))
+                      vim.api.nvim_win_set_cursor(0, { selection.lnum, selection.col - 1 })
+                    end)
+                    return true
+                  end,
+                })
+                :find()
+            end
+
+            -- Call definition with custom handler
+            vim.lsp.buf.definition { on_list = on_list }
+          end, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
           map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -538,7 +601,7 @@ require('lazy').setup({
         --
         vtsls = {
           enabled = true,
-          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'svelte' },
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           settings = {
             vtsls = {
               tsserver = {
@@ -686,7 +749,7 @@ require('lazy').setup({
         -- is found.
         html = { 'prettier' },
         vue = { 'prettier', 'biome' },
-        svelte = { 'prettier', 'biome' },
+        svelte = { 'prettier' },
         css = { 'prettier' },
         scss = { 'prettier' },
         astro = { 'prettier' },

@@ -139,6 +139,8 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Angular shortcuts
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -658,8 +660,8 @@ require('lazy').setup({
             excludeLanguages = {},
             extensionsPath = {},
             preferences = {},
-            showAbbreviationSuggestions = false,
-            showExpandedAbbreviation = 'never',
+            showAbbreviationSuggestions = true,
+            showExpandedAbbreviation = 'always',
             showSuggestionsAsSnippets = false,
             syntaxProfiles = {},
             variables = {},
@@ -748,6 +750,7 @@ require('lazy').setup({
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         html = { 'prettier' },
+        typescript = { 'biome' },
         vue = { 'prettier', 'biome' },
         svelte = { 'prettier' },
         css = { 'prettier' },
@@ -963,6 +966,154 @@ require('lazy').setup({
   },
   { 'ThePrimeagen/vim-be-good' },
   {
+    'kevinhwang91/nvim-ufo',
+    dependencies = { 'kevinhwang91/promise-async' },
+    config = function()
+      -- Basic folding settings
+      vim.o.foldcolumn = '1' -- '0' is not bad
+      vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]] -- arrow stuff
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value
+      vim.o.foldlevelstart = 99
+      vim.o.foldenable = true
+
+      -- from: https://github.com/AstroNvim/AstroNvim/blob/271c9c3f71c2e315cb16c31276dec81ddca6a5a6/lua/astronvim/autocmds.lua#L98-L120
+      -- reddit: https://old.reddit.com/r/neovim/comments/18mr2fq/how_to_make_folds_persist_in_neovim_with_lazyvim/ke5w3ad/
+      -- added diff checking so it works well with diffview.nvim
+      local augroup = vim.api.nvim_create_augroup
+      local autocmd = vim.api.nvim_create_autocmd
+      local view_group = augroup('auto_view', { clear = true })
+
+      -- Function to check if current tab has a DiffviewFilePanel
+      local function is_in_diffview_tab()
+        local current_tab = vim.api.nvim_get_current_tabpage()
+        local windows = vim.api.nvim_tabpage_list_wins(current_tab)
+
+        for _, win in ipairs(windows) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          local buf_name = vim.api.nvim_buf_get_name(buf)
+          if buf_name:match 'DiffviewFilePanel' then
+            return true
+          end
+        end
+
+        return false
+      end
+
+      autocmd({ 'BufWinLeave', 'BufWritePost', 'WinLeave' }, {
+        desc = 'Save view with mkview for real files',
+        group = view_group,
+        callback = function(args)
+          -- Check if current window is in diff mode
+          local is_diff = vim.wo.diff
+          -- Check if in diffview tab
+          local in_diffview = is_in_diffview_tab()
+
+          if is_diff or in_diffview then
+            return
+          end
+
+          if vim.b[args.buf].view_activated then
+            vim.cmd.mkview { mods = { emsg_silent = true } }
+          end
+        end,
+      })
+
+      autocmd('BufWinEnter', {
+        desc = 'Try to load file view if available and enable view saving for real files',
+        group = view_group,
+        callback = function(args)
+          -- Check if current window is in diff mode
+          local is_diff = vim.wo.diff
+          -- Check if in diffview tab
+          local in_diffview = is_in_diffview_tab()
+
+          if is_diff or in_diffview then
+            return
+          end
+
+          if not vim.b[args.buf].view_activated then
+            local filetype = vim.api.nvim_get_option_value('filetype', { buf = args.buf })
+            local buftype = vim.api.nvim_get_option_value('buftype', { buf = args.buf })
+            local ignore_filetypes = { 'gitcommit', 'gitrebase', 'svg', 'hgcommit' }
+
+            if buftype == '' and filetype and filetype ~= '' and not vim.tbl_contains(ignore_filetypes, filetype) then
+              vim.b[args.buf].view_activated = true
+              vim.cmd.loadview { mods = { emsg_silent = true } }
+            end
+          end
+        end,
+      })
+
+      -- Keymaps for folding
+      vim.keymap.set('n', 'zR', require('ufo').openAllFolds, { desc = 'Open all folds' })
+      vim.keymap.set('n', 'zM', require('ufo').closeAllFolds, { desc = 'Close all folds' })
+      vim.keymap.set('n', 'zK', function()
+        local winid = require('ufo').peekFoldedLinesUnderCursor()
+        if not winid then
+          vim.lsp.buf.hover()
+        else
+          vim.api.nvim_win_set_option(winid, 'winblend', 0)
+        end
+      end, { desc = 'Peek fold' })
+
+      -- Custom handler to show line count toolocal handler = function(virtText, lnum, endLnum, width, truncate)
+      local handler = function(virtText, lnum, endLnum, width, truncate)
+        local newVirtText = {}
+        local suffix = ('… %d lines'):format(endLnum - lnum)
+        local sufWidth = vim.fn.strdisplaywidth(suffix)
+        local targetWidth = width - sufWidth
+        local curWidth = 0
+        for _, chunk in ipairs(virtText) do
+          local chunkText = chunk[1]
+          local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+          if targetWidth > curWidth + chunkWidth then
+            table.insert(newVirtText, chunk)
+          else
+            chunkText = truncate(chunkText, targetWidth - curWidth)
+            local hlGroup = chunk[2]
+            table.insert(newVirtText, { chunkText, hlGroup })
+            chunkWidth = vim.fn.strdisplaywidth(chunkText)
+            -- str width returned from truncate() may less than 2nd argument, need padding
+            if curWidth + chunkWidth < targetWidth then
+              suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+            end
+            break
+          end
+          curWidth = curWidth + chunkWidth
+        end
+        table.insert(newVirtText, { suffix, 'MoreMsg' })
+        return newVirtText
+      end
+      -- Setup with treesitter as main provider
+      require('ufo').setup {
+        fold_virt_text_handler = handler,
+        provider_selector = function(bufnr, filetype, buftype)
+          return { 'treesitter', 'indent' }
+        end,
+      }
+    end,
+  },
+  {
+    'joeveiga/ng.nvim',
+    lazy = true,
+    ft = { 'typescript', 'html', 'typescriptreact' },
+    config = function()
+      local ng = require 'ng'
+
+      vim.keymap.set('n', '<leader>at', function()
+        ng.goto_template_for_component { reuse_window = true }
+      end, { noremap = true, silent = true, desc = 'Angular: Go to template' })
+
+      vim.keymap.set('n', '<leader>ac', function()
+        ng.goto_component_with_template_file { reuse_window = true }
+      end, { noremap = true, silent = true, desc = 'Angular: Go to component' })
+
+      vim.keymap.set('n', '<leader>aT', function()
+        ng.get_template_tcb { reuse_window = true }
+      end, { noremap = true, silent = true, desc = 'Angular: Get template TCB' })
+    end,
+  },
+  {
     'jellydn/hurl.nvim',
     dependencies = {
       'MunifTanjim/nui.nvim',
@@ -1091,7 +1242,13 @@ require('lazy').setup({
     },
     opts = {}, -- your configuration
   },
-  { 'sindrets/diffview.nvim' },
+  {
+    'sindrets/diffview.nvim',
+    keys = {
+      { '<leader>do', '<cmd>DiffviewOpen<CR>', desc = 'Open diffview' },
+      { '<leader>dx', '<cmd>DiffviewClose<CR>', desc = 'Close diffview' },
+    },
+  },
   {
     'robitx/gp.nvim',
     config = function()
@@ -1108,7 +1265,7 @@ require('lazy').setup({
             name = 'ChatCopilot',
             chat = true,
             command = false,
-            model = { model = 'claude-3.5-sonnet', temperature = 1.1, top_p = 1 },
+            model = { model = 'claude-3.7-sonnet', temperature = 1.1, top_p = 1 },
             system_prompt = [[
 You are an AI programming assistant embedded into NeoVim text editor.
 Follow the user's requirements carefully & to the letter. Keep your answers short and impersonal. You are a general AI assistant. Ask question if you need clarification to provide better answer. Follow the user's requirements carefully & to the letter. The user may provide Markdown code blocks as extra context, treat the codes as they are and respect their language types defined next to the three backticks.

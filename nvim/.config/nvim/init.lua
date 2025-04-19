@@ -525,7 +525,17 @@ require('lazy').setup({
           end
 
           map('<leader>ca', code_action_with_cursor_adjustment, '[C]ode [A]ction')
-          vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, { buffer = event.buf, desc = 'LSP: [C]ode [A]ction' })
+          vim.api.nvim_create_autocmd('BufLeave', {
+            pattern = { 'DiffviewFilePanel', 'DiffviewFiles' },
+            callback = function()
+              -- Give a small delay to ensure buffer switching has completed
+              vim.defer_fn(function()
+                -- Recreate your code action binding if needed
+                vim.keymap.set('n', '<leader>ca', code_action_with_cursor_adjustment, { desc = '[C]ode [A]ction' })
+              end, 10)
+            end,
+          })
+          -- vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, { buffer = event.buf, desc = 'LSP: [C]ode [A]ction' })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -1248,6 +1258,18 @@ require('lazy').setup({
       { '<leader>do', '<cmd>DiffviewOpen<CR>', desc = 'Open diffview' },
       { '<leader>dx', '<cmd>DiffviewClose<CR>', desc = 'Close diffview' },
     },
+    config = function()
+      require('diffview').setup {
+        view = {
+          default = {
+            disable_diagnostics = true,
+          },
+          file_history = {
+            disable_diagnostics = true,
+          },
+        },
+      }
+    end,
   },
   {
     'robitx/gp.nvim',
